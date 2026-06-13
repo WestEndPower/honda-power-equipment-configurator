@@ -1,0 +1,12 @@
+﻿SortOrder,PaymentOptionID,Label,Creditor,ProgramStartDate,ProgramEndDate,APR,TermMonths,ApplicationFee,MinAmount,MaxAmount,DealerFeePercent,PersonalUse,CommercialUse,SubPrime,RebateEligible,Display,Active,3.00,Type,DiscountType,DiscountValue,TotalCharges,MinPayment,MinDownPayment,CreditApplicationURL,Disclaimer
+1,,Cash or Bank Check,Cash / Check,,,,,,,,0.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Cash,,,,,,,
+2,,Amex / Discover / MasterCard / Visa,Credit Card,,,,,,,,3.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Credit Card,,,,,,,
+3, ,5.99% for 12 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",5.99,12,50.00,500,75000.00,3.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
+4, ,7.99% for 24 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",7.99,24,150.00,1500,75000.00,3.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
+5, ,9.99% for 36 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",9.99,36,150.00,1500,75000.00,3.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
+6, ,11.99% for 48 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",11.99,48,150.00,1500,75000.00,3.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
+7, ,8.99% for 12 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",8.99,12,50.00,500,75000.00,0.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
+8, ,10.99% for 24 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",10.99,24,150.00,1500,75000.00,0.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
+9, ,12.99% for 36 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",12.99,36,150.00,1500,75000.00,0.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
+10, ,14.99% for 48 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",14.99,48,150.00,1500,75000.00,0.00,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
+11, ,10.99% for 36 Months,Sheffield Financial,"May 1, 2026","July 31, 2026",10.99,36,150.00,1500,75000.00,4.50,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,FALSE,Finance, , ,,,,https://prequalify.sheffieldFinancial.com/Apply/Dealer/51498,
