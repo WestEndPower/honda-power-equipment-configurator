@@ -592,18 +592,7 @@ Estimated Monthly Payment:
   )
 )} / month</strong>
 ` : ''}
-${pay && num(pay.TermMonths) > 0 ? `
-<tr>
-  <td>Estimated Monthly Payment</td>
-  <td>${fmtMoney(
-    monthlyPayment(
-      financePrincipal(),
-      num(pay.APR),
-      num(pay.TermMonths)
-    )
-  )}/mo</td>
-</tr>
-` : ''}
+
 </div>
 
     <div class="honda-print-box">
@@ -645,6 +634,18 @@ ${pay && num(pay.TermMonths) > 0 ? `
           <td>Estimated Total</td>
           <td>${fmtMoney(orderTotal())}</td>
         </tr>
+        ${pay && num(pay.TermMonths) > 0 ? `
+<tr>
+  <td>Estimated Monthly Payment</td>
+  <td>${fmtMoney(
+    monthlyPayment(
+      financePrincipal(),
+      num(pay.APR),
+      num(pay.TermMonths)
+    )
+  )}/mo</td>
+</tr>
+` : ''}
       </table>
     </div>
 
