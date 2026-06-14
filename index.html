@@ -1,5 +1,4 @@
-Business: ${clean($('honda-business-name').value)||'Not entered'}
-Alt Phone: ${clean($('honda-customer-phone2').value)||'Not entered'}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- =========================================================
@@ -398,7 +397,10 @@ ${state.deliveryMethod === 'PICKUP_DAN' ? `
       </div>
   `;
 }
-  function quoteText(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(); return `Honda Power Equipment Quote\nWest End Power Equipment\n\nCustomer: ${clean($('honda-customer-name').value)||'Not entered'}Business: ${clean($('honda-business-name').value)||'Not entered'}\nPhone: ${clean($('honda-customer-phone').value)||'Not entered'}Alt Phone: ${clean($('honda-customer-phone2').value)||'Not entered'}\nEmail: ${clean($('honda-customer-email').value)||'Not entered'}
+  function quoteText(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(); return `Honda Power Equipment Quote\nWest End Power Equipment\n\nCustomer: ${clean($('honda-customer-name').value)||'Not entered'}
+Business: ${clean($('honda-business-name').value)||'Not entered'}
+Phone: ${clean($('honda-customer-phone').value)||'Not entered'}
+Additional Phone: ${clean($('honda-customer-phone2').value)||'Not entered'}\nEmail: ${clean($('honda-customer-email').value)||'Not entered'}
 
 Address: ${clean($('honda-customer-street').value)||'Not entered'}
 ${clean($('honda-customer-city').value)||''} ${clean($('honda-customer-state').value)||''} ${clean($('honda-customer-zip').value)||''}\n\nUse Type: ${state.selectedUse}
@@ -417,7 +419,7 @@ ${money(prod?.FactoryRebate) > 0
   <th>Business</th>
   <td>${escapeHtml(clean($('honda-business-name').value)||'Not entered')}</td>
 </tr><tr><th>Phone</th><td>${escapeHtml(clean($('honda-customer-phone').value)||'Not entered')}</td></tr><tr>
-  <th>Additonal Phone</th>
+  <th>Additional Phone</th>
   <td>${escapeHtml(clean($('honda-customer-phone2').value)||'Not entered')}</td>
 </tr><tr><th>Email</th><td>${escapeHtml(clean($('honda-customer-email').value)||'Not entered')}</td></tr>
 
