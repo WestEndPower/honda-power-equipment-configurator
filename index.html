@@ -69,7 +69,35 @@
         <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
       </div>
 
-      <aside><section class="honda-panel honda-summary"><h2>Order-Ready Quote</h2><div><label for="honda-customer-name">Customer Name</label><input id="honda-customer-name" placeholder="Customer name" /><label for="honda-customer-street" style="margin-top:10px;">Street Address</label>
+      <aside><section class="honda-panel honda-summary"><h2>Order-Ready Quote</h2><div><div class="honda-controls">
+
+  <div>
+    <label for="honda-customer-name">Customer Name</label>
+    <input id="honda-customer-name" placeholder="Customer name" />
+  </div>
+
+  <div>
+    <label for="honda-business-name">Business Name</label>
+    <input id="honda-business-name" placeholder="Business name (optional)" />
+  </div>
+
+  <div>
+    <label for="honda-customer-phone">Phone</label>
+    <input id="honda-customer-phone"
+           type="tel"
+           maxlength="14"
+           placeholder="Phone Number" />
+  </div>
+
+  <div>
+    <label for="honda-customer-phone2">Alt Phone</label>
+    <input id="honda-customer-phone2"
+           type="tel"
+           maxlength="14"
+           placeholder="Alternate Phone" />
+  </div>
+
+</div><label for="honda-customer-street" style="margin-top:10px;">Street Address</label>
 <input id="honda-customer-street" placeholder="Street address" />
 
 <label for="honda-customer-city" style="margin-top:10px;">City</label>
@@ -79,10 +107,7 @@
 <input id="honda-customer-state" placeholder="State" value="CT" />
 
 <label for="honda-customer-zip" style="margin-top:10px;">ZIP Code</label>
-<input id="honda-customer-zip" maxlength="5" placeholder="ZIP Code" /></div><div style="margin-top:10px"><label for="honda-customer-phone">Phone</label><input id="honda-customer-phone"
-       type="tel"
-       maxlength="14"
-       placeholder="Phone Number" /></div><div style="margin-top:10px"><label for="honda-customer-email">Email</label><input id="honda-customer-email" type="email" placeholder="Email address" /></div><div style="margin-top:10px"><label for="honda-notes">Notes</label><textarea id="honda-notes" placeholder="Optional quote/order notes"></textarea></div><div id="honda-summary-lines" style="margin-top:12px"></div><div class="honda-line"><span>Price Before Discount</span><strong id="honda-equipment-price">$0.00</strong></div><div class="honda-line" id="honda-rebate-line">
+<input id="honda-customer-zip" maxlength="5" placeholder="ZIP Code" /></div><div style="margin-top:10px"><label for="honda-customer-email">Email</label><input id="honda-customer-email" type="email" placeholder="Email address" /></div><div style="margin-top:10px"><label for="honda-notes">Notes</label><textarea id="honda-notes" placeholder="Optional quote/order notes"></textarea></div><div id="honda-summary-lines" style="margin-top:12px"></div><div class="honda-line"><span>Price Before Discount</span><strong id="honda-equipment-price">$0.00</strong></div><div class="honda-line" id="honda-rebate-line">
   <span>Rebate / Discount</span>
   <strong id="honda-rebate-amount">-$0.00</strong>
 </div>
@@ -140,7 +165,9 @@
     renderAll();
 })); document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); state.selectedUse=btn.dataset.use; state.selectedPayment=null; renderPayments(); renderAll(); })); $('honda-print').addEventListener('click',printQuote); $('honda-copy').addEventListener('click',copyQuote); $('honda-stripe-deposit').addEventListener('click',()=>stripePlaceholder('deposit')); $('honda-stripe-full').addEventListener('click',()=>stripePlaceholder('full')); [
  'honda-customer-name',
+ 'honda-business-name',
  'honda-customer-phone',
+ 'honda-customer-phone2',
  'honda-customer-email',
  'honda-customer-street',
  'honda-customer-city',
@@ -162,7 +189,21 @@
 
   e.target.value = v;
 });
-  
+$('honda-customer-phone2').addEventListener('input', e => {
+  let v = e.target.value.replace(/\D/g,'');
+
+  if(v.length > 10) v = v.substring(0,10);
+
+  if(v.length > 6){
+    v = `(${v.substring(0,3)}) ${v.substring(3,6)}-${v.substring(6)}`;
+  }else if(v.length > 3){
+    v = `(${v.substring(0,3)}) ${v.substring(3)}`;
+  }else if(v.length){
+    v = `(${v}`;
+  }
+
+  e.target.value = v;
+});  
 }
   function renderAll(){
   renderProductDetails();
