@@ -86,7 +86,27 @@
   function renderProductDetails(){ const box=$('honda-product-details'), p=state.selectedProduct; if(!p){box.innerHTML='<div class="honda-note">Choose a Honda product to see pricing, specs, warranty, delivery class, and payment options.</div>'; return;} const badges=[clean(p.Category),clean(p.SubCategory),clean(p.DeliveryClass),clean(p.Badge),clean(p.Type)].filter(Boolean).map(b=>`<span class="honda-badge red">${escapeHtml(b)}</span>`).join(''); box.innerHTML=`<div class="honda-card featured"><div class="honda-title">${escapeHtml(nameOf(p))}</div>${imageOf(p)?`<div class="honda-product-img-wrap"><img class="honda-product-img" src="${escapeHtml(imageOf(p))}" alt="${escapeHtml(nameOf(p))}"></div>`:''}<div class="honda-info-box"><div class="honda-small">Model: <strong>${escapeHtml(clean(p.Model))}</strong> | SKU: <strong>${escapeHtml(skuOf(p))}</strong></div><div style="margin:8px 0">${badges}</div>${displayPrice(p)}${clean(p.PromoTitle)?`<div class="honda-note"><strong>${escapeHtml(clean(p.PromoTitle))}</strong>${clean(p.PromoDescription)?`<br>${escapeHtml(clean(p.PromoDescription))}`:''}${clean(p.PromoEndDate)?`<br><strong>Ends:</strong> ${escapeHtml(clean(p.PromoEndDate))}`:''}</div>`:''}${assemblyFee()>0?`<div class="honda-line"><span>Assembly / Setup</span><strong>${fmtMoney(assemblyFee())}</strong></div>`:`<div class="honda-line"><span>Assembly / Setup</span><strong>Included / No charge listed</strong></div>`}${(clean(p.WarrantyConsumer)||clean(p.WarrantyProfessional))?`<div class="honda-line"><span>Warranty</span><strong>${clean(p.WarrantyConsumer)?`Consumer: ${escapeHtml(clean(p.WarrantyConsumer))}`:''}${clean(p.WarrantyConsumer)&&clean(p.WarrantyProfessional)?' | ':''}${clean(p.WarrantyProfessional)?`Commercial: ${escapeHtml(clean(p.WarrantyProfessional))}`:''}</strong></div>`:''}${renderSpecs(p)}</div></div>`; }
   function renderSpecs(p){ const pairs=[]; [['Engine',p.Engine],['Displacement',p.Displacement],['Starting System',p.StartingSystem],['Deck Size',p.DeckSize],['Clearing Width',p.ClearingWidth],['Transmission',p.Transmission],['Fuel Capacity',p.FuelCapacity]].forEach(([k,v])=>{ if(clean(v)) pairs.push([k,clean(v)]); }); for(let i=1;i<=8;i++){ const label=clean(p[`Spec${i}Label`]), value=clean(p[`Spec${i}Value`]); if(label&&value&&!pairs.some(x=>x[0]===label&&x[1]===value)) pairs.push([label,value]); } if(!pairs.length)return''; return `<table class="honda-table"><tbody>${pairs.map(([k,v])=>`<tr><th>${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join('')}</tbody></table>`; }
 
-  function renderDeliveryDetails(){ const info=deliveryInfo(); $('honda-zip-wrap').classList.toggle('honda-hide', state.deliveryMethod!=='DELIVERY'); $('honda-delivery-details').innerHTML=`<div class="honda-payment-result"><h3>${escapeHtml(info.label)}</h3>${info.town?`<div class="honda-line"><span>Delivery Area</span><strong>${escapeHtml(info.town)}</strong></div>`:''}${state.selectedProduct?`<div class="honda-line"><span>Delivery Class</span><strong>${escapeHtml(clean(state.selectedProduct.DeliveryClass)||'Standard')}</strong></div>`:''}${info.showFee?`<div class="honda-line"><span>Delivery Charge</span><strong>${fmtMoney(info.fee)}</strong></div>`:''}${state.deliveryMethod==='DELIVERY'&&!info.found?`<p class="honda-small">Delivery charge must be confirmed by West End Power.</p>`:''}</div>`; }
+  function renderDeliveryDetails(){ const info=deliveryInfo(); $('honda-zip-wrap').classList.toggle('honda-hide', state.deliveryMethod!=='DELIVERY'); $('honda-delivery-details').innerHTML=`
+<div class="honda-payment-result">
+  <h3>${escapeHtml(info.label)}</h3>
+
+  ${info.town?`
+  <div class="honda-line">
+    <span>Delivery Area</span>
+    <strong>${escapeHtml(info.town)}</strong>
+  </div>`:''}
+
+  ${info.showFee?`
+  <div class="honda-line">
+    <span>Delivery Charge</span>
+    <strong>${fmtMoney(info.fee)}</strong>
+  </div>`:''}
+
+  ${state.deliveryMethod==='DELIVERY'&&!info.found?`
+  <p class="honda-small">
+    Delivery charge must be confirmed by West End Power.
+  </p>`:''}
+</div>`; }
 
   function optionId(p){ return clean(p.PaymentOptionID || p.ProgramCode || p.Label || p.SortOrder); }
   function paymentBrandOK(p){ const brand=clean(p.Brand||'ALL').toUpperCase(); return brand==='ALL'||brand===BRAND; }
