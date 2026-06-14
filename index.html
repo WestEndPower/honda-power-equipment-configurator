@@ -54,11 +54,6 @@
     <option value="NM">New Milford, CT</option>
     <option value="DAN">Danbury, CT</option>
   </select>
-<label for="honda-pickup-location" style="margin-top:10px;">Pick Up At</label>
-<select id="honda-pickup-location">
-  <option value="NM">New Milford, CT</option>
-  <option value="DAN">Danbury, CT</option>
-</select>          
 </section>
   
         <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
@@ -83,11 +78,12 @@
   const TAX_RATE = 0.0635;
   const BRAND = 'HONDA';
   const DATA_FILES = {tools:'data/tools.csv', payments:'data/payment-options.csv', delivery:'data/delivery.csv'};
-  const state = {
+ const state = {
   products:[],
   payments:[],
   delivery:[],
   selectedUse:'PERSONAL',
+  deliveryMethod:'DELIVERY',
   selectedPickupLocation:'NM', selectedCategory:'', selectedProduct:null, selectedPayment:null, deliveryZip:''};
   const $ = id => document.getElementById(id);
   function clean(v){ return (v === null || v === undefined || String(v).toLowerCase() === 'nan') ? '' : String(v).trim(); }
@@ -109,7 +105,10 @@
   function bindEvents(){ $('honda-search').addEventListener('input', renderProducts); $('honda-product-select').addEventListener('change', () => { const sku=clean($('honda-product-select').value); state.selectedProduct=state.products.find(p=>skuOf(p)===sku)||null; state.selectedPayment=null; renderPayments(); renderAll(); }); $('honda-payment-select').addEventListener('change',()=>{ const id=clean($('honda-payment-select').value); state.selectedPayment=state.payments.find(p=>optionId(p)===id)||null; renderAll(); }); $('honda-pickup-location').addEventListener('change',()=>{
   state.selectedPickupLocation = $('honda-pickup-location').value;
   renderSummary();
-}); $('honda-delivery-zip').addEventListener('input',()=>{ state.deliveryZip=padZip($('honda-delivery-zip').value); renderAll(); }); document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); state.selectedUse=btn.dataset.use; state.selectedPayment=null; renderPayments(); renderAll(); })); $('honda-print').addEventListener('click',printQuote); $('honda-copy').addEventListener('click',copyQuote); $('honda-stripe-deposit').addEventListener('click',()=>stripePlaceholder('deposit')); $('honda-stripe-full').addEventListener('click',()=>stripePlaceholder('full')); [
+}); $('honda-delivery-zip').addEventListener('input',()=>{ state.deliveryZip=padZip($('honda-delivery-zip').value); renderAll(); });$('honda-delivery-zip').addEventListener('input',()=>{
+  state.deliveryZip = padZip($('honda-delivery-zip').value);
+  renderAll();
+}); document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); state.selectedUse=btn.dataset.use; state.selectedPayment=null; renderPayments(); renderAll(); })); $('honda-print').addEventListener('click',printQuote); $('honda-copy').addEventListener('click',copyQuote); $('honda-stripe-deposit').addEventListener('click',()=>stripePlaceholder('deposit')); $('honda-stripe-full').addEventListener('click',()=>stripePlaceholder('full')); [
  'honda-customer-name',
  'honda-customer-phone',
  'honda-customer-email',
@@ -167,7 +166,12 @@
   };
 }
   function orderSubtotal(){
-  return equipmentPrice() + assemblyFee() + deliveryInfo().fee;
+  const delivery =
+    state.deliveryMethod === 'DELIVERY'
+      ? deliveryInfo().fee
+      : 0;
+
+  return equipmentPrice() + assemblyFee() + delivery;
 }
   function orderTax(){ return orderSubtotal()*TAX_RATE; }
   function orderTotal(){ return orderSubtotal()+orderTax(); }
