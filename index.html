@@ -296,6 +296,8 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
     : 'Customer Pickup';
   $('honda-tax').textContent = fmtMoney(tax);
   $('honda-total').textContent = fmtMoney(total);
+    $('honda-payment-summary').textContent =
+  pay ? (clean(pay.Label) || optionId(pay)) : 'Not Selected';
 
   $('honda-assembly-line').classList.toggle('honda-hide', assembly <= 0);
   $('honda-delivery-line').classList.toggle('honda-hide', delivery <= 0);
