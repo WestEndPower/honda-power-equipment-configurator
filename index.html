@@ -211,13 +211,29 @@
       ? deliveryInfo().fee
       : 0;
 
-  return equipmentPrice() + assemblyFee() + delivery;
+  const rebate = money(state.selectedProduct?.FactoryRebate);
+
+return equipmentPrice()
+       - rebate
+       + assemblyFee()
+       + delivery;
 }
   function orderTax(){ return orderSubtotal()*TAX_RATE; }
   function orderTotal(){ return orderSubtotal()+orderTax(); }
 
   function displayPrice(product){ const msrp=money(product.MSRP), sale=money(product.SalePrice); if(msrp&&sale&&sale<msrp){ return `<div class="honda-small" style="font-weight:900;text-transform:uppercase;">MSRP <span class="honda-old">${fmtMoney(msrp)}</span></div><div class="honda-price-main">${fmtMoney(sale)}</div>`;} return `<div class="honda-price-main">${fmtMoney(basePrice(product))}</div>`; }
-  function renderProductDetails(){ const box=$('honda-product-details'), p=state.selectedProduct; if(!p){box.innerHTML='<div class="honda-note">Choose a Honda product to see pricing, specs, warranty, delivery options, and payment options.</div>'; return;} const badges=[clean(p.Category),clean(p.SubCategory),clean(p.Badge),clean(p.Type)].filter(Boolean).map(b=>`<span class="honda-badge red">${escapeHtml(b)}</span>`).join(''); box.innerHTML=`<div class="honda-card featured"><div class="honda-title">${escapeHtml(nameOf(p))}</div>${imageOf(p)?`<div class="honda-product-img-wrap"><img class="honda-product-img" src="${escapeHtml(imageOf(p))}" alt="${escapeHtml(nameOf(p))}"></div>`:''}<div class="honda-info-box"><div class="honda-small">Model: <strong>${escapeHtml(clean(p.Model))}</strong> | SKU: <strong>${escapeHtml(skuOf(p))}</strong></div><div style="margin:8px 0">${badges}</div>${displayPrice(p)}${clean(p.PromoTitle)?`<div class="honda-note"><strong>${escapeHtml(clean(p.PromoTitle))}</strong>${clean(p.PromoDescription)?`<br>${escapeHtml(clean(p.PromoDescription))}`:''}${clean(p.PromoEndDate)?`<br><strong>Ends:</strong> ${escapeHtml(clean(p.PromoEndDate))}`:''}</div>`:''}${assemblyFee()>0
+  function renderProductDetails(){ const box=$('honda-product-details'), p=state.selectedProduct; if(!p){box.innerHTML='<div class="honda-note">Choose a Honda product to see pricing, specs, warranty, delivery options, and payment options.</div>'; return;} const badges=[clean(p.Category),clean(p.SubCategory),clean(p.Badge),clean(p.Type)].filter(Boolean).map(b=>`<span class="honda-badge red">${escapeHtml(b)}</span>`).join(''); box.innerHTML=`<div class="honda-card featured"><div class="honda-title">${escapeHtml(nameOf(p))}</div>${imageOf(p)?`<div class="honda-product-img-wrap"><img class="honda-product-img" src="${escapeHtml(imageOf(p))}" alt="${escapeHtml(nameOf(p))}"></div>`:''}<div class="honda-info-box"><div class="honda-small">Model: <strong>${escapeHtml(clean(p.Model))}</strong> | SKU: <strong>${escapeHtml(skuOf(p))}</strong></div><div style="margin:8px 0">${badges}</div>${displayPrice(p)}${money(p.FactoryRebate) > 0 ? `
+  <div class="honda-success">
+    <strong>Factory Rebate Available</strong><br>
+    Save ${fmtMoney(money(p.FactoryRebate))}
+    ${clean(p.FactoryRebateEndDate)
+      ? `<br>Ends ${escapeHtml(clean(p.FactoryRebateEndDate))}`
+      : ''}
+    ${clean(p.FactoryRebateNote)
+      ? `<br>${escapeHtml(clean(p.FactoryRebateNote))}`
+      : ''}
+  </div>
+` : ''}${clean(p.PromoTitle)?`<div class="honda-note"><strong>${escapeHtml(clean(p.PromoTitle))}</strong>${clean(p.PromoDescription)?`<br>${escapeHtml(clean(p.PromoDescription))}`:''}${clean(p.PromoEndDate)?`<br><strong>Ends:</strong> ${escapeHtml(clean(p.PromoEndDate))}`:''}</div>`:''}${assemblyFee()>0
   ? `<div class="honda-line"><span>Assembly / Setup</span><strong>${fmtMoney(assemblyFee())}</strong></div>`
   : `<div class="honda-line"><span>Assembly</span><strong>Included</strong></div>`
 }${(clean(p.WarrantyConsumer)||clean(p.WarrantyProfessional))?`<div class="honda-line"><span>Warranty</span><strong>${clean(p.WarrantyConsumer)?`Consumer: ${escapeHtml(clean(p.WarrantyConsumer))}`:''}${clean(p.WarrantyConsumer)&&clean(p.WarrantyProfessional)?' | ':''}${clean(p.WarrantyProfessional)?`Commercial: ${escapeHtml(clean(p.WarrantyProfessional))}`:''}</strong></div>`:''}${renderSpecs(p)}</div></div>`; }
@@ -262,8 +278,9 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
   const del = deliveryInfo();
 
   const equip = equipmentPrice();
+  const rebate = money(prod?.FactoryRebate);  
   const assembly = assemblyFee();
- const delivery = state.deliveryMethod === 'DELIVERY' ? del.fee : 0;
+  const delivery = state.deliveryMethod === 'DELIVERY' ? del.fee : 0;
   const tax = orderTax();
   const total = orderTotal();
 
@@ -290,7 +307,20 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
         <span>Honda Model</span>
         <strong>${prod ? escapeHtml(clean(prod.Model)) : 'Not selected'}</strong>
       </div>
+      ${rebate > 0 ? `
+  <div class="honda-line">
+    <span>Factory Rebate</span>
+    <strong>-${fmtMoney(rebate)}</strong>
+  </div>
+` : ''}
 
+${rebate > 0 && clean(prod.FactoryRebateNote) ? `
+  <div class="honda-line">
+    <span>Rebate Note</span>
+    <strong>${escapeHtml(clean(prod.FactoryRebateNote))}</strong>
+  </div>
+` : ''}
+      
       ${state.deliveryMethod === 'DELIVERY' && del.town ? `
   <div class="honda-line">
     <span>Delivery To</span>
