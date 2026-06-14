@@ -34,17 +34,30 @@
         <section class="honda-panel"><h2>1. Select Use & Honda Product</h2><label>Use Type</label><div class="honda-use-buttons" id="honda-use-buttons"><button class="honda-pill active" type="button" data-use="PERSONAL">Personal Use</button><button class="honda-pill" type="button" data-use="COMMERCIAL">Commercial Use</button></div><div class="honda-controls"><div><label for="honda-search">Search Honda Products</label><input id="honda-search" type="search" placeholder="Search model, SKU, category, specs, or keyword..." /></div><div><label for="honda-product-select">Honda Product</label><select id="honda-product-select"><option value="">Choose Honda product</option></select></div></div><div class="honda-category-buttons" id="honda-category-buttons"></div><div id="honda-product-details"></div></section>
 
         <section class="honda-panel">
-  <h2>2. Delivery / Pickup</h2>
+  <h2>2. Pickup / Delivery</h2>
 
-  <label for="honda-pickup-location">Pickup Location</label>
+  <label for="honda-pickup-location">Preferred Location</label>
   <select id="honda-pickup-location">
     <option value="NM">New Milford, CT</option>
     <option value="DAN">Danbury, CT</option>
   </select>
 
+  <label for="honda-delivery-zip" style="margin-top:10px;">Customer ZIP Code</label>
+  <input id="honda-delivery-zip"
+         inputmode="numeric"
+         maxlength="5"
+         placeholder="Enter ZIP code to check delivery" />
+
+  <div id="honda-delivery-details"></div>
+
   <label for="honda-delivery-method" style="margin-top:10px;">
-    Delivery Method
-  </label><select id="honda-delivery-method"><option value="PICKUP">Customer Pickup</option><option value="DELIVERY">Local Delivery</option></select><div id="honda-zip-wrap" style="margin-top:10px;"><label for="honda-delivery-zip">Delivery ZIP Code</label><input id="honda-delivery-zip" inputmode="numeric" maxlength="5" placeholder="Enter ZIP code" /></div><div id="honda-delivery-details"></div></section>
+    Fulfillment Option
+  </label>
+  <select id="honda-delivery-method">
+    <option value="PICKUP">Customer Pickup</option>
+    <option value="DELIVERY">Local Delivery</option>
+  </select>
+</section>
 
         <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
       </div>
@@ -115,8 +128,49 @@
   function assemblyFee(){ const p=state.selectedProduct; if(!p)return 0; return money(p.AssemblyCharge); }
   function deliveryClassColumn(p){ const raw=clean(p && p.DeliveryClass); const n=raw.toUpperCase().replace(/[^A-Z0-9]/g,''); if(['HHWB','HHW B','HANDHELD','WALKBEHIND','WALKBEHINDMOWER'].includes(n) || n.includes('HH') || n.includes('HANDHELD')) return 'HH_WB'; if(n.includes('LARGEWB')||n.includes('LARGEWALK')) return 'LargeWB'; if(n.includes('RIDEON')||n.includes('ZEROTURN')||n.includes('RIDING')) return 'RideOn'; if(n.includes('UTV')) return 'UTV'; if(n.includes('CUT')||n.includes('TRACTOR')) return 'CUT'; return 'HH_WB'; }
   function deliveryRow(){ const z=padZip(state.deliveryZip); if(!z)return null; return state.delivery.find(d=>padZip(d.ZipCode)===z || padZip(d.Lookup)===z) || null; }
-  function deliveryInfo(){ if(state.deliveryMethod!=='DELIVERY') return {label:'Customer Pickup', fee:0, town:'', found:true, showFee:false}; const z=padZip(state.deliveryZip); if(!z) return {label:'Enter ZIP code for local delivery', fee:0, town:'', found:false, showFee:false}; const row=deliveryRow(); if(!row) return {label:'Delivery Quote Required', fee:0, town:'', found:false, showFee:false}; const col=deliveryClassColumn(state.selectedProduct); const fee=money(row[col]); return {label: fee>0 ? 'Delivery Fee Applies' : 'Local Delivery Included', fee, town:clean(row.DeliveryTown), found:true, showFee:fee>0, col}; }
-  function orderSubtotal(){ return equipmentPrice()+assemblyFee()+deliveryInfo().fee; }
+  function deliveryInfo(){
+  const z = padZip(state.deliveryZip);
+
+  if(!z){
+    return {
+      label:'Enter ZIP code to check delivery',
+      fee:0,
+      town:'',
+      found:false,
+      showFee:false
+    };
+  }
+
+  const row = deliveryRow();
+
+  if(!row){
+    return {
+      label:'Delivery Quote Required',
+      fee:0,
+      town:'',
+      found:false,
+      showFee:false
+    };
+  }
+
+  const col = deliveryClassColumn(state.selectedProduct);
+  const fee = money(row[col]);
+
+  return {
+    label: fee > 0 ? 'Delivery Fee Applies' : 'Local Delivery Included',
+    fee,
+    town:clean(row.DeliveryTown),
+    found:true,
+    showFee:fee > 0
+  };
+}
+  function orderSubtotal(){
+  const delivery = state.deliveryMethod === 'DELIVERY'
+    ? deliveryInfo().fee
+    : 0;
+
+  return equipmentPrice() + assemblyFee() + delivery;
+}
   function orderTax(){ return orderSubtotal()*TAX_RATE; }
   function orderTotal(){ return orderSubtotal()+orderTax(); }
 
@@ -127,7 +181,46 @@
 }${(clean(p.WarrantyConsumer)||clean(p.WarrantyProfessional))?`<div class="honda-line"><span>Warranty</span><strong>${clean(p.WarrantyConsumer)?`Consumer: ${escapeHtml(clean(p.WarrantyConsumer))}`:''}${clean(p.WarrantyConsumer)&&clean(p.WarrantyProfessional)?' | ':''}${clean(p.WarrantyProfessional)?`Commercial: ${escapeHtml(clean(p.WarrantyProfessional))}`:''}</strong></div>`:''}${renderSpecs(p)}</div></div>`; }
   function renderSpecs(p){ const pairs=[]; [['Engine',p.Engine],['Displacement',p.Displacement],['Starting System',p.StartingSystem],['Deck Size',p.DeckSize],['Clearing Width',p.ClearingWidth],['Transmission',p.Transmission],['Fuel Capacity',p.FuelCapacity]].forEach(([k,v])=>{ if(clean(v)) pairs.push([k,clean(v)]); }); for(let i=1;i<=8;i++){ const label=clean(p[`Spec${i}Label`]), value=clean(p[`Spec${i}Value`]); if(label&&value&&!pairs.some(x=>x[0]===label&&x[1]===value)) pairs.push([label,value]); } if(!pairs.length)return''; return `<table class="honda-table"><tbody>${pairs.map(([k,v])=>`<tr><th>${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join('')}</tbody></table>`; }
 
-  function renderDeliveryDetails(){ const info=deliveryInfo(); $('honda-zip-wrap').classList.toggle('honda-hide', state.deliveryMethod!=='DELIVERY'); $('honda-delivery-details').innerHTML=`
+ function renderDeliveryDetails(){
+  const info = deliveryInfo();
+
+  $('honda-delivery-details').innerHTML = `
+    <div class="honda-payment-result">
+      <h3>
+        ${!info.town
+          ? escapeHtml(info.label)
+          : (info.fee > 0
+              ? `Delivery to ${escapeHtml(info.town)} — ${fmtMoney(info.fee)}`
+              : `Delivery to ${escapeHtml(info.town)} Included`)
+        }
+      </h3>
+
+      ${state.deliveryMethod === 'DELIVERY' && info.showFee ? `
+        <div class="honda-line">
+          <span>Delivery Charge</span>
+          <strong>${fmtMoney(info.fee)}</strong>
+        </div>
+      ` : ''}
+
+      ${state.deliveryMethod === 'PICKUP' ? `
+        <div class="honda-line">
+          <span>Pickup Location</span>
+          <strong>${
+            state.selectedPickupLocation === 'DAN'
+              ? 'Danbury, CT'
+              : 'New Milford, CT'
+          }</strong>
+        </div>
+      ` : ''}
+
+      ${state.deliveryMethod === 'DELIVERY' && !info.found ? `
+        <p class="honda-small">
+          Delivery charge must be confirmed by West End Power.
+        </p>
+      ` : ''}
+    </div>
+  `;
+}
 <div class="honda-payment-result">
   <h3>
 ${!info.town
@@ -169,14 +262,45 @@ ${!info.town
   function financePrincipal(){ const pay=state.selectedPayment; const total=orderTotal(); return total + num(pay && pay.ApplicationFee) + num(pay && pay.TotalCharges) + customerFeeAmount(pay,total); }
   function renderPaymentDetails(){ const box=$('honda-payment-details'), pay=state.selectedPayment, prod=state.selectedProduct; if(!prod){box.innerHTML='<div class="honda-note">Choose a Honda product before selecting payment.</div>'; return;} if(!pay){box.innerHTML='<div class="honda-note">Choose a payment option to calculate estimated total and monthly payment.</div>'; return;} const total=orderTotal(), apr=num(pay.APR), months=num(pay.TermMonths), principal=financePrincipal(), monthly=monthlyPayment(principal,apr,months), creditUrl=clean(pay.CreditApplicationURL); box.innerHTML=`<div class="honda-payment-result"><h3>${escapeHtml(clean(pay.Label)||optionId(pay))}</h3><div class="honda-line"><span>Payment Type</span><strong>${escapeHtml(clean(pay.Creditor)||'N/A')}</strong></div>${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / ${months} months</strong></div>`:''}<div class="honda-line"><span>Estimated Total with Tax</span><strong>${fmtMoney(total)}</strong></div>${months?`<div class="honda-line"><span>Estimated Monthly Payment</span><strong>${fmtMoney(monthly)} / mo</strong></div>`:''}${creditUrl?`<div class="honda-btn-row"><a class="honda-btn green" href="${escapeHtml(creditUrl)}" target="_blank" rel="noopener">Apply for Financing</a></div>`:''}${clean(pay.Disclaimer)?`<p class="honda-small">${escapeHtml(clean(pay.Disclaimer))}</p>`:''}</div>`; }
 
-  function renderSummary(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(); const equip=equipmentPrice(), assembly=assemblyFee(), delivery=del.fee, tax=orderTax(), total=orderTotal(); $('honda-equipment-price').textContent=fmtMoney(equip); $('honda-assembly-fee').textContent=fmtMoney(assembly); $('honda-delivery-fee').textContent=delivery>0?fmtMoney(delivery):del.label; $('honda-tax').textContent=fmtMoney(tax); $('honda-total').textContent=fmtMoney(total); $('honda-assembly-line').classList.toggle('honda-hide', assembly<=0); $('honda-delivery-line').classList.toggle('honda-hide', state.deliveryMethod==='PICKUP'||delivery<=0); $('honda-summary-lines').innerHTML=`<div class="honda-card"><div class="honda-line"><span>Use Type</span><strong>${state.selectedUse==='COMMERCIAL'?'Commercial Use':'Personal Use'}</strong></div><div class="honda-line"><span>Product</span><strong>${prod?escapeHtml(nameOf(prod)):'Not selected'}</strong></div><div class="honda-line">
-  <span>Pickup Location</span>
-  <strong>${
-    state.selectedPickupLocation === 'DAN'
-      ? 'Danbury, CT'
-      : 'New Milford, CT'
-  }</strong>
-</div><div class="honda-line"><span>Delivery Method</span><strong>${escapeHtml(del.label)}</strong></div><div class="honda-line"><span>Payment</span><strong>${pay?escapeHtml(clean(pay.Label)||optionId(pay)):'Not selected'}</strong></div></div>`; }
+  function renderSummary(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(); const equip = equipmentPrice();
+const assembly = assemblyFee();
+const delivery = state.deliveryMethod === 'DELIVERY' ? del.fee : 0;
+const tax = orderTax();
+const total = orderTotal(); $('honda-equipment-price').textContent=fmtMoney(equip); $('honda-assembly-fee').textContent=fmtMoney(assembly); $('honda-delivery-fee').textContent=delivery>0?fmtMoney(delivery):del.label; $('honda-tax').textContent=fmtMoney(tax); $('honda-total').textContent=fmtMoney(total); $('honda-assembly-line').classList.toggle('honda-hide', assembly<=0); $('honda-delivery-line').classList.toggle('honda-hide', state.deliveryMethod==='PICKUP'||delivery<=0); $('honda-summary-lines').innerHTML=`
+  <div class="honda-card">
+    <div class="honda-line">
+      <span>Use Type</span>
+      <strong>${state.selectedUse==='COMMERCIAL'?'Commercial Use':'Personal Use'}</strong>
+    </div>
+
+    <div class="honda-line">
+      <span>Product</span>
+      <strong>${prod?escapeHtml(nameOf(prod)):'Not selected'}</strong>
+    </div>
+
+    <div class="honda-line">
+      <span>${state.deliveryMethod === 'DELIVERY' ? 'Delivery From' : 'Pickup Location'}</span>
+      <strong>${state.selectedPickupLocation === 'DAN' ? 'Danbury, CT' : 'New Milford, CT'}</strong>
+    </div>
+
+    <div class="honda-line">
+      <span>Fulfillment</span>
+      <strong>${state.deliveryMethod === 'DELIVERY' ? 'Local Delivery' : 'Customer Pickup'}</strong>
+    </div>
+
+    ${state.deliveryMethod === 'DELIVERY' && del.town ? `
+      <div class="honda-line">
+        <span>Delivery To</span>
+        <strong>${escapeHtml(del.town)}</strong>
+      </div>
+    ` : ''}
+
+    <div class="honda-line">
+      <span>Payment</span>
+      <strong>${pay?escapeHtml(clean(pay.Label)||optionId(pay)):'Not selected'}</strong>
+    </div>
+  </div>
+`;
   function quoteText(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(); return `Honda Power Equipment Quote\nWest End Power Equipment\n\nCustomer: ${clean($('honda-customer-name').value)||'Not entered'}\nPhone: ${clean($('honda-customer-phone').value)||'Not entered'}\nEmail: ${clean($('honda-customer-email').value)||'Not entered'}
 
 Address: ${clean($('honda-customer-street').value)||'Not entered'}
