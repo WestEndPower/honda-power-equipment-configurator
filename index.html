@@ -419,7 +419,30 @@ if($('honda-payment-sort')?.value === 'payment'){
 
   list.sort((a,b)=>num(a.APR)-num(b.APR));
 
-} $('honda-payment-select').innerHTML='<option value="">Choose payment option</option>'+list.map(p=>`<option value="${escapeHtml(optionId(p))}">${escapeHtml(clean(p.Label)||optionId(p))}</option>`).join(''); }
+}
+
+$('honda-payment-select').innerHTML =
+  '<option value="">Choose payment option</option>' +
+  list.map(p => {
+
+    const principal =
+      orderTotal()
+      + num(p.ApplicationFee)
+      + num(p.TotalCharges)
+      + customerFeeAmount(p, orderTotal());
+
+    const months = num(p.TermMonths);
+    const payment = months > 0
+      ? ` • Est. ${fmtMoney(monthlyPayment(principal, num(p.APR), months))}/mo`
+      : '';
+
+    return `
+      <option value="${escapeHtml(optionId(p))}">
+        ${escapeHtml(clean(p.Label)||optionId(p))}${payment}
+      </option>
+    `;
+  }).join('');
+}
   function customerFeeAmount(pay, principal){ if(!pay)return 0; return principal*(num(pay.CustomerFeePercent)/100)+num(pay.CustomerFeeFlat); }
   function monthlyPayment(principal, apr, months){ principal=Number(principal)||0; apr=Number(apr)||0; months=Number(months)||0; if(!principal||!months)return 0; if(!apr)return principal/months; const r=apr/100/12; return principal*(r*Math.pow(1+r,months))/(Math.pow(1+r,months)-1); }
   function financePrincipal(){ const pay=state.selectedPayment; const total=orderTotal(); return total + num(pay && pay.ApplicationFee) + num(pay && pay.TotalCharges) + customerFeeAmount(pay,total); }
