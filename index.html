@@ -511,10 +511,17 @@ Prices, availability, financing, rebates, freight, setup, delivery, and final or
     </div>
 
     <div style="font-size:12px;text-align:right;">
-      <strong>Quote #:</strong> ${quoteNumber}<br>
-      <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
-      <strong>Status:</strong> Estimate / Pending Confirmation
-    </div>
+  <strong>Quote #:</strong> ${quoteNumber}<br>
+  <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
+
+  ${clean($('honda-customer-name').value)
+    ? `<strong>Customer:</strong> ${escapeHtml(clean($('honda-customer-name').value))}<br>`
+    : ''}
+
+  ${clean($('honda-business-name').value)
+    ? `<strong>Business:</strong> ${escapeHtml(clean($('honda-business-name').value))}<br>`
+    : ''}
+</div>
   </div>
 
   <div class="honda-print-grid">
