@@ -333,8 +333,7 @@ ${state.deliveryMethod === 'PICKUP' ? `Pickup Location: ${
   </td>
 </tr>
 
-<tr>
-  ${state.deliveryMethod === 'PICKUP' ? `
+${state.deliveryMethod === 'PICKUP' ? `
 <tr>
   <th>Pickup Location</th>
   <td>${state.selectedPickupLocation === 'DAN'
