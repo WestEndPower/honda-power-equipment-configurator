@@ -249,7 +249,10 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
 
   $('honda-equipment-price').textContent = fmtMoney(equip);
   $('honda-assembly-fee').textContent = fmtMoney(assembly);
-  $('honda-delivery-fee').textContent = delivery > 0 ? fmtMoney(delivery) : del.label;
+  $('honda-delivery-fee').textContent =
+  state.deliveryMethod === 'DELIVERY'
+    ? (delivery > 0 ? fmtMoney(delivery) : del.label)
+    : 'Customer Pickup';
   $('honda-tax').textContent = fmtMoney(tax);
   $('honda-total').textContent = fmtMoney(total);
 
@@ -268,12 +271,12 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
         <strong>${prod ? escapeHtml(clean(prod.Model)) : 'Not selected'}</strong>
       </div>
 
-      ${del.town ? `
-        <div class="honda-line">
-          <span>Delivery To</span>
-          <strong>${escapeHtml(del.town)}</strong>
-        </div>
-      ` : ''}
+      ${state.deliveryMethod === 'DELIVERY' && del.town ? `
+  <div class="honda-line">
+    <span>Delivery To</span>
+    <strong>${escapeHtml(del.town)}</strong>
+  </div>
+` : ''}
 
       ${state.deliveryMethod === 'PICKUP_NM' ? `
   <div class="honda-line">
