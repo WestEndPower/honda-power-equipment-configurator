@@ -410,7 +410,7 @@ $('honda-after-rebate-line').classList.toggle('honda-hide', rebate <= 0);
     <div class="honda-card">
       <div class="honda-line">
         <span>Use Type</span>
-        <strong>${state.selectedUse==='COMMERCIAL'?'Commercial Use':'Personal Use'}</strong>
+        <strong>${state.selectedUse==='COMMERCIAL'?'Commercial':'Personal'}</strong>
       </div>
       
       ${clean($('honda-customer-name').value) ? `
@@ -622,19 +622,18 @@ Estimated Monthly Payment:
 
         <tr>
           <td>Delivery Charge</td>
-          <td>${state.deliveryMethod === 'DELIVERY' && del.fee > 0 ? fmtMoney(del.fee) : 'Not selected'}</td>
+         <td>${
+  state.deliveryMethod === 'DELIVERY'
+    ? (del.fee > 0 ? fmtMoney(del.fee) : 'Included')
+    : 'Not Applicable'
+}</td>
         </tr>
 
         <tr>
           <td>Estimated CT Sales Tax</td>
           <td>${fmtMoney(orderTax())}</td>
         </tr>
-
-        <tr class="honda-print-final">
-          <td>Estimated Total</td>
-          <td>${fmtMoney(orderTotal())}</td>
-        </tr>
-        ${pay && num(pay.TermMonths) > 0 ? `
+${pay && num(pay.TermMonths) > 0 ? `
 <tr>
   <td>Estimated Monthly Payment</td>
   <td>${fmtMoney(
@@ -646,6 +645,11 @@ Estimated Monthly Payment:
   )}/mo</td>
 </tr>
 ` : ''}
+        <tr class="honda-print-final">
+          <td>Estimated Total</td>
+          <td>${fmtMoney(orderTotal())}</td>
+        </tr>
+        
       </table>
     </div>
 
