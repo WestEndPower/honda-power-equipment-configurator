@@ -33,7 +33,18 @@
       <div>
         <section class="honda-panel"><h2>1. Select Use & Honda Product</h2><label>Use Type</label><div class="honda-use-buttons" id="honda-use-buttons"><button class="honda-pill active" type="button" data-use="PERSONAL">Personal Use</button><button class="honda-pill" type="button" data-use="COMMERCIAL">Commercial Use</button></div><div class="honda-controls"><div><label for="honda-search">Search Honda Products</label><input id="honda-search" type="search" placeholder="Search model, SKU, category, specs, or keyword..." /></div><div><label for="honda-product-select">Honda Product</label><select id="honda-product-select"><option value="">Choose Honda product</option></select></div></div><div class="honda-category-buttons" id="honda-category-buttons"></div><div id="honda-product-details"></div></section>
 
-        <section class="honda-panel"><h2>2. Delivery / Pickup</h2><label for="honda-delivery-method">Delivery Method</label><select id="honda-delivery-method"><option value="PICKUP">Customer Pickup</option><option value="DELIVERY">Local Delivery</option></select><div id="honda-zip-wrap" style="margin-top:10px;"><label for="honda-delivery-zip">Delivery ZIP Code</label><input id="honda-delivery-zip" inputmode="numeric" maxlength="5" placeholder="Enter ZIP code" /></div><div id="honda-delivery-details"></div></section>
+        <section class="honda-panel">
+  <h2>2. Delivery / Pickup</h2>
+
+  <label for="honda-pickup-location">Pickup Location</label>
+  <select id="honda-pickup-location">
+    <option value="NM">New Milford, CT</option>
+    <option value="DAN">Danbury, CT</option>
+  </select>
+
+  <label for="honda-delivery-method" style="margin-top:10px;">
+    Delivery Method
+  </label><select id="honda-delivery-method"><option value="PICKUP">Customer Pickup</option><option value="DELIVERY">Local Delivery</option></select><div id="honda-zip-wrap" style="margin-top:10px;"><label for="honda-delivery-zip">Delivery ZIP Code</label><input id="honda-delivery-zip" inputmode="numeric" maxlength="5" placeholder="Enter ZIP code" /></div><div id="honda-delivery-details"></div></section>
 
         <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
       </div>
