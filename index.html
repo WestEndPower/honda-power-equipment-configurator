@@ -43,12 +43,22 @@
          placeholder="Enter ZIP code to check delivery" />
 
   <div id="honda-delivery-details"></div>
-
+          
+<label for="honda-delivery-method" style="margin-top:10px;">Delivery / Pickup Choice</label>
+<select id="honda-delivery-method">
+  <option value="DELIVERY">Local Delivery</option>
+  <option value="PICKUP">Customer Pickup</option>
+</select>
   <label for="honda-pickup-location" style="margin-top:10px;">Or Pick Up At</label>
   <select id="honda-pickup-location">
     <option value="NM">New Milford, CT</option>
     <option value="DAN">Danbury, CT</option>
   </select>
+<label for="honda-pickup-location" style="margin-top:10px;">Pick Up At</label>
+<select id="honda-pickup-location">
+  <option value="NM">New Milford, CT</option>
+  <option value="DAN">Danbury, CT</option>
+</select>          
 </section>
   
         <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
@@ -174,14 +184,14 @@
 
   $('honda-delivery-details').innerHTML = `
     <div class="honda-payment-result">
-      </h3>
-              ${!info.town
+      <h3>
+        ${!info.town
           ? escapeHtml(info.label)
           : (info.fee > 0
               ? `Delivery to ${escapeHtml(info.town)} — ${fmtMoney(info.fee)}`
               : `Delivery to ${escapeHtml(info.town)} Included`)
         }
-  
+      </h3>
 
       ${info.showFee ? `
         <div class="honda-line">
@@ -196,8 +206,7 @@
     </div>
   `;
 }
-      </h3>
-      
+          
   function optionId(p){ return clean(p.PaymentOptionID || p.ProgramCode || p.Label || p.SortOrder); }
   function paymentBrandOK(p){ const brand=clean(p.Brand||'ALL').toUpperCase(); return brand==='ALL'||brand===BRAND; }
   function paymentUseOK(p){ if(state.selectedUse==='COMMERCIAL') return clean(p.CommercialUse)===''||isTrue(p.CommercialUse); return clean(p.PersonalUse)===''||isTrue(p.PersonalUse); }
