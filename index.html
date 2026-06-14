@@ -419,18 +419,18 @@ $('honda-after-rebate-line').classList.toggle('honda-hide', rebate <= 0);
     <strong>${escapeHtml(clean($('honda-customer-name').value))}</strong>
   </div>
 ` : ''}
-
-      <div class="honda-line">
-        <span>Honda Model</span>
-        <strong>${prod ? escapeHtml(clean(prod.Model)) : 'Not selected'}</strong>
-      </div>
-      
 ${clean($('honda-business-name').value) ? `
   <div class="honda-line">
     <span>Business</span>
     <strong>${escapeHtml(clean($('honda-business-name').value))}</strong>
   </div>
 ` : ''}
+      <div class="honda-line">
+        <span>Honda Model</span>
+        <strong>${prod ? escapeHtml(clean(prod.Model)) : 'Not selected'}</strong>
+      </div>
+      
+
 
 ${rebate > 0 && clean(prod.FactoryRebateNote) ? `
   <div class="honda-line">
@@ -478,7 +478,7 @@ ${state.deliveryMethod === 'PICKUP_DAN'
   : ''}\nHonda Model: ${prod?clean(prod.Model):'Not selected'}\nSKU/Code: ${prod?skuOf(prod):'Not selected'}\nDelivery: ${del.label}${del.town?' - '+del.town:''}\nPayment Option: ${pay?clean(pay.Label)||optionId(pay):'Not selected'}\n\nPrice Before Discount: ${fmtMoney(equipmentPrice())}
 ${money(prod?.FactoryRebate) > 0
   ? `Rebate / Discount: -${fmtMoney(money(prod.FactoryRebate))}
-Price After Discount: ${fmtMoney(equipmentPrice()-money(prod.FactoryRebate))}
+Your After: ${fmtMoney(equipmentPrice()-money(prod.FactoryRebate))}
 `
   : ''}
 Assembly / Setup: ${assemblyFee()>0 ? fmtMoney(assemblyFee()) : 'Included'}
@@ -513,6 +513,7 @@ Prices, availability, financing, rebates, freight, setup, delivery, and final or
     <div style="font-size:12px;text-align:right;">
   <strong>Quote #:</strong> ${quoteNumber}<br>
   <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
+  <strong>Valid Through:</strong> ${new Date(Date.now()+14*24*60*60*1000).toLocaleDateString()}<br>
 
   ${clean($('honda-customer-name').value)
     ? `<strong>Customer:</strong> ${escapeHtml(clean($('honda-customer-name').value))}<br>`
