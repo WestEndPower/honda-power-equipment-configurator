@@ -113,7 +113,24 @@
 </div>
 </section>
   
-        <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
+        <section class="honda-panel">
+  <h2>3. Select Payment Option</h2>
+
+  <label for="honda-payment-sort">Sort Payment Options</label>
+  <select id="honda-payment-sort">
+    <option value="rate">Lowest Rate First</option>
+    <option value="payment">Lowest Payment First</option>
+  </select>
+
+  <br><br>
+
+  <label for="honda-payment-select">Payment Method</label>
+  <select id="honda-payment-select">
+    <option value="">Choose payment option</option>
+  </select>
+
+  <div id="honda-payment-details"></div>
+</section>
       </div>
 
       <aside><section class="honda-panel honda-summary"><h2>Order-Ready Quote</h2><div>
@@ -202,7 +219,9 @@
 
   async function init(){ try{ const [products,payments,delivery] = await Promise.all([loadCSV(DATA_FILES.tools),loadCSV(DATA_FILES.payments),loadCSV(DATA_FILES.delivery)]); state.products=products.filter(p=>clean(p.Active)===''||isTrue(p.Active)).sort(sortByOrder); state.payments=payments.filter(p=>clean(p.Active)===''||isTrue(p.Active)).sort(sortByOrder); state.delivery=delivery.filter(d=>clean(d.Active)===''||isTrue(d.Active)); $('honda-load-status').className='honda-success'; $('honda-load-status').textContent='Honda configurator data loaded.'; bindEvents(); renderCategories(); renderProducts(); renderPayments(); renderAll(); }catch(err){ $('honda-load-status').className='honda-error'; $('honda-load-status').innerHTML='<strong>Data file problem:</strong> '+err.message+'<br>Check data/tools.csv, data/payment-options.csv, and data/delivery.csv.'; } }
 
-  function bindEvents(){ $('honda-search').addEventListener('input', renderProducts); $('honda-product-select').addEventListener('change', () => { const sku=clean($('honda-product-select').value); state.selectedProduct=state.products.find(p=>skuOf(p)===sku)||null; state.selectedPayment=null; renderPayments(); renderAll(); }); $('honda-payment-select').addEventListener('change',()=>{ const id=clean($('honda-payment-select').value); state.selectedPayment=state.payments.find(p=>optionId(p)===id)||null; renderAll(); });  $('honda-delivery-zip').addEventListener('input',()=>{ state.deliveryZip=padZip($('honda-delivery-zip').value); renderAll(); });
+  function bindEvents(){ $('honda-search').addEventListener('input', renderProducts); $('honda-product-select').addEventListener('change', () => { const sku=clean($('honda-product-select').value); state.selectedProduct=state.products.find(p=>skuOf(p)===sku)||null; state.selectedPayment=null; renderPayments(); renderAll(); }); $('honda-payment-select').addEventListener('change',()=>{ const id=clean($('honda-payment-select').value); state.selectedPayment=state.payments.find(p=>optionId(p)===id)||null; renderAll(); });$('honda-payment-sort').addEventListener('change',()=>{
+  renderPayments();
+});  $('honda-delivery-zip').addEventListener('input',()=>{ state.deliveryZip=padZip($('honda-delivery-zip').value); renderAll(); });
     document.querySelectorAll('#honda-delivery-buttons .honda-pill')
   .forEach(btn => btn.addEventListener('click',()=>{
 
@@ -368,7 +387,39 @@ return equipmentPrice()
   function paymentDateOK(p){ const today=new Date(), start=parseDate(p.ProgramStartDate), end=parseDate(p.ProgramEndDate); if(start&&today<start)return false; if(end&&today>end)return false; return true; }
   function paymentAmountOK(p){ const price=equipmentPrice(); const min=num(p.MinAmount); const max=num(p.MaxAmount)||999999999; return price>=min&&price<=max; }
   function visiblePayment(p){ if(!paymentBrandOK(p))return false; if(!(clean(p.Display)===''||isTrue(p.Display)))return false; if(clean(p['3.00']) && !isTrue(p['3.00'])) return false; if(!paymentUseOK(p))return false; if(!paymentDateOK(p))return false; if(state.selectedProduct&&!paymentAmountOK(p))return false; return true; }
-  function renderPayments(){ const list=state.payments.filter(visiblePayment); $('honda-payment-select').innerHTML='<option value="">Choose payment option</option>'+list.map(p=>`<option value="${escapeHtml(optionId(p))}">${escapeHtml(clean(p.Label)||optionId(p))}</option>`).join(''); }
+  function renderPayments(){ let list = state.payments.filter(visiblePayment);
+
+if($('honda-payment-sort')?.value === 'payment'){
+
+  list.sort((a,b)=>{
+
+    const pa = monthlyPayment(
+      orderTotal()
+      + num(a.ApplicationFee)
+      + num(a.TotalCharges)
+      + customerFeeAmount(a,orderTotal()),
+      num(a.APR),
+      num(a.TermMonths)
+    );
+
+    const pb = monthlyPayment(
+      orderTotal()
+      + num(b.ApplicationFee)
+      + num(b.TotalCharges)
+      + customerFeeAmount(b,orderTotal()),
+      num(b.APR),
+      num(b.TermMonths)
+    );
+
+    return pa - pb;
+
+  });
+
+}else{
+
+  list.sort((a,b)=>num(a.APR)-num(b.APR));
+
+} $('honda-payment-select').innerHTML='<option value="">Choose payment option</option>'+list.map(p=>`<option value="${escapeHtml(optionId(p))}">${escapeHtml(clean(p.Label)||optionId(p))}</option>`).join(''); }
   function customerFeeAmount(pay, principal){ if(!pay)return 0; return principal*(num(pay.CustomerFeePercent)/100)+num(pay.CustomerFeeFlat); }
   function monthlyPayment(principal, apr, months){ principal=Number(principal)||0; apr=Number(apr)||0; months=Number(months)||0; if(!principal||!months)return 0; if(!apr)return principal/months; const r=apr/100/12; return principal*(r*Math.pow(1+r,months))/(Math.pow(1+r,months)-1); }
   function financePrincipal(){ const pay=state.selectedPayment; const total=orderTotal(); return total + num(pay && pay.ApplicationFee) + num(pay && pay.TotalCharges) + customerFeeAmount(pay,total); }
