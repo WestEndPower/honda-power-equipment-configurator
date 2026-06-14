@@ -66,7 +66,6 @@
     <option value="DAN">Danbury, CT</option>
   </select>
 </div>
-  </select>
 </section>
   
         <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
@@ -293,8 +292,7 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
         </div>
       ` : ''}
 
-      <div class="honda-line">
-        ${state.deliveryMethod === 'PICKUP' ? `
+      ${state.deliveryMethod === 'PICKUP' ? `
   <div class="honda-line">
     <span>Pick Up At</span>
     <strong>${state.selectedPickupLocation === 'DAN'
