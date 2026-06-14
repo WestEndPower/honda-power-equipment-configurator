@@ -369,6 +369,13 @@ $('honda-after-rebate-line').classList.toggle('honda-hide', rebate <= 0);
         <span>Use Type</span>
         <strong>${state.selectedUse==='COMMERCIAL'?'Commercial Use':'Personal Use'}</strong>
       </div>
+      
+      ${clean($('honda-customer-name').value) ? `
+  <div class="honda-line">
+    <span>Customer</span>
+    <strong>${escapeHtml(clean($('honda-customer-name').value))}</strong>
+  </div>
+` : ''}
 
       <div class="honda-line">
         <span>Honda Model</span>
