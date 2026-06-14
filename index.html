@@ -490,8 +490,9 @@ ${money(prod?.FactoryRebate) > 0 ? `
         : 'Customer Pickup'
     }
   </td>
-</tr><tr><th>Payment Option</th><td>${pay?escapeHtml(clean(pay.Label)||optionId(pay)):'Not selected'}</td></tr><tr><th>Price Before Discount</th><td>${fmtMoney(equipmentPrice())}</td></tr><tr>
-  ${money(prod?.FactoryRebate) > 0 ? `
+</tr><tr><th>Payment Option</th><td>${pay?escapeHtml(clean(pay.Label)||optionId(pay)):'Not selected'}</td></tr><tr><th>Price Before Discount</th><td>${fmtMoney(equipmentPrice())}</td></tr>
+
+${money(prod?.FactoryRebate) > 0 ? `
 <tr>
   <th>Price After Discount</th>
   <td>${fmtMoney(equipmentPrice()-money(prod.FactoryRebate))}</td>
