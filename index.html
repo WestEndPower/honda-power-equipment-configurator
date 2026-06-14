@@ -14,7 +14,11 @@
     :root{--honda-red:#cc0000;--honda-dark:#111;--honda-gray:#f5f5f5;--honda-border:#ddd;--honda-green:#1f7a3a;--max-width:1180px}
     *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;line-height:1.45}a{color:inherit}
     .honda-wrap{max-width:var(--max-width);margin:0 auto;padding:20px}.honda-hero{background:linear-gradient(135deg,#111,#333);color:#fff;padding:28px 20px;border-bottom:7px solid var(--honda-red)}.honda-hero-inner{max-width:var(--max-width);margin:0 auto}.honda-eyebrow{color:#ffcc00;font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:13px}.honda-hero h1{font-size:clamp(30px,4vw,48px);margin:7px 0 8px;line-height:1.1}.honda-hero p{font-size:18px;margin:0;max-width:900px}
-    .honda-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:start}.honda-panel{background:#fff;border:1px solid var(--honda-border);border-radius:14px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:18px}.honda-panel h2{margin:0 0 12px;font-size:22px}.honda-panel h3{margin:14px 0 8px;font-size:17px}.honda-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    .honda-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:start}.honda-panel{background:#fff;border:1px solid var(--honda-border);border-radius:14px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:18px}.honda-panel h2{margin:0 0 12px;font-size:22px}.honda-panel h3{margin:14px 0 8px;font-size:17px}
+    .honda-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    .honda-controls.three{
+  grid-template-columns:1fr .45fr .65fr;
+}
     label{font-weight:700;font-size:13px;display:block;margin-bottom:5px}input,select,textarea{width:100%;padding:11px 12px;border:1px solid #cfcfcf;border-radius:9px;font-size:15px;background:#fff}textarea{min-height:78px}
     .honda-btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;padding:11px 14px;font-weight:900;cursor:pointer;text-decoration:none;background:var(--honda-red);color:#fff!important}.honda-btn.dark{background:#111}.honda-btn.light{background:#eee;color:#111!important}.honda-btn.green{background:var(--honda-green)}.honda-btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
     .honda-use-buttons,.honda-category-buttons{display:flex;gap:8px;margin:0 0 14px;overflow-x:auto;white-space:nowrap;padding-bottom:4px}.honda-pill{flex:0 0 auto;border:1px solid #111;background:#111;color:#fff;border-radius:999px;padding:8px 12px;font-weight:900;cursor:pointer}.honda-pill.active,.honda-pill:hover{background:var(--honda-red);border-color:var(--honda-red);color:#fff}
@@ -94,7 +98,7 @@
     <label for="honda-customer-street" style="margin-top:10px;">Street Address</label>
 <input id="honda-customer-street" placeholder="Street address" />
 
-<div class="honda-controls">
+<div class="honda-controls three">
 
   <div>
     <label for="honda-customer-city">City</label>
