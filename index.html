@@ -50,15 +50,7 @@
     <option value="DAN">Danbury, CT</option>
   </select>
 </section>
-  <label for="honda-delivery-zip" style="margin-top:10px;">Enter ZIP Code for Delivery Quote</label>
-  <input id="honda-delivery-zip"
-         inputmode="numeric"
-         maxlength="5"
-         placeholder="Enter ZIP code to check delivery" />
-
-  <div id="honda-delivery-details"></div>
-</section>
-
+  
         <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
       </div>
 
@@ -205,33 +197,7 @@
   `;
 }
       </h3>
-
-      ${state.deliveryMethod === 'DELIVERY' && info.showFee ? `
-        <div class="honda-line">
-          <span>Delivery Charge</span>
-          <strong>${fmtMoney(info.fee)}</strong>
-        </div>
-      ` : ''}
-
-      ${state.deliveryMethod === 'PICKUP' ? `
-        <div class="honda-line">
-          <span>Pickup Location</span>
-          <strong>${
-            state.selectedPickupLocation === 'DAN'
-              ? 'Danbury, CT'
-              : 'New Milford, CT'
-          }</strong>
-        </div>
-      ` : ''}
-
-      ${state.deliveryMethod === 'DELIVERY' && !info.found ? `
-        <p class="honda-small">
-          Delivery charge must be confirmed by West End Power.
-        </p>
-      ` : ''}
-    </div>
-  `;
-}
+      
   function optionId(p){ return clean(p.PaymentOptionID || p.ProgramCode || p.Label || p.SortOrder); }
   function paymentBrandOK(p){ const brand=clean(p.Brand||'ALL').toUpperCase(); return brand==='ALL'||brand===BRAND; }
   function paymentUseOK(p){ if(state.selectedUse==='COMMERCIAL') return clean(p.CommercialUse)===''||isTrue(p.CommercialUse); return clean(p.PersonalUse)===''||isTrue(p.PersonalUse); }
