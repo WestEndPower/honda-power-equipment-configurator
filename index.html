@@ -633,7 +633,23 @@ Estimated Monthly Payment:
           <td>Estimated CT Sales Tax</td>
           <td>${fmtMoney(orderTax())}</td>
         </tr>
+<tr class="honda-print-final">
+  <td>Estimated Total</td>
+  <td>${fmtMoney(orderTotal())}</td>
+</tr>
 
+${pay && num(pay.TermMonths) > 0 ? `
+<tr>
+  <td>Estimated Monthly Payment</td>
+  <td>${fmtMoney(
+    monthlyPayment(
+      financePrincipal(),
+      num(pay.APR),
+      num(pay.TermMonths)
+    )
+  )}/mo</td>
+</tr>
+` : ''}
         
       </table>
     </div>
