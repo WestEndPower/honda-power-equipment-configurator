@@ -626,19 +626,6 @@ ${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}
   <td>${fmtMoney(orderTotal())}</td>
 </tr>
 
-${pay && num(pay.TermMonths) > 0 ? `
-<tr>
-  <td>Estimated Monthly Payment</td>
-  <td>${fmtMoney(
-    monthlyPayment(
-      financePrincipal(),
-      num(pay.APR),
-      num(pay.TermMonths)
-    )
-  )}/mo</td>
-</tr>
-` : ''}
-        
       </table>
     </div>
 
