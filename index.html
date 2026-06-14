@@ -44,7 +44,7 @@
 
   <div id="honda-delivery-details"></div>
           
-<label>Receive Equipment</label>
+<label>Delivery Available (Enter ZIP Above)</label>
 
 <div class="honda-use-buttons" id="honda-delivery-buttons">
   <button type="button"
@@ -59,10 +59,13 @@
     Customer Pickup
   </button>
 </div>
-  <label for="honda-pickup-location" style="margin-top:10px;">Or Pick Up At</label>
+  <div id="pickup-location-wrap">
+  <label for="honda-pickup-location">Select Pickup Location</label>
   <select id="honda-pickup-location">
     <option value="NM">New Milford, CT</option>
     <option value="DAN">Danbury, CT</option>
+  </select>
+</div>
   </select>
 </section>
   
@@ -134,7 +137,17 @@
  'honda-customer-zip',
  'honda-notes'
 ].forEach(id=>$(id).addEventListener('input',renderSummary)); }
-  function renderAll(){ renderProductDetails(); renderDeliveryDetails(); renderPaymentDetails(); renderSummary(); }
+  function renderAll(){
+  renderProductDetails();
+  renderDeliveryDetails();
+  renderPaymentDetails();
+  renderSummary();
+
+  $('pickup-location-wrap').classList.toggle(
+    'honda-hide',
+    state.deliveryMethod !== 'PICKUP'
+  );
+}
 
   function renderCategories(){ const cats=[...new Set(state.products.map(p=>clean(p.Category)).filter(Boolean))].sort(); $('honda-category-buttons').innerHTML=`<button type="button" class="honda-pill active" data-category="">All Categories</button>`+cats.map(c=>`<button type="button" class="honda-pill" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join(''); document.querySelectorAll('#honda-category-buttons .honda-pill').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#honda-category-buttons .honda-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); state.selectedCategory=clean(btn.dataset.category); state.selectedProduct=null; $('honda-product-select').value=''; renderProducts(); renderPayments(); renderAll(); })); }
   function productSearchText(p){ return [skuOf(p),clean(p.HondaCode),clean(p.Model),nameOf(p),clean(p.Category),clean(p.SubCategory),clean(p.Engine),clean(p.Displacement),clean(p.StartingSystem),clean(p.DeckSize),clean(p.ClearingWidth),clean(p.Transmission),clean(p.Tags),clean(p.DeliveryClass)].join(' ').toLowerCase(); }
@@ -281,7 +294,14 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
       ` : ''}
 
       <div class="honda-line">
-        <span>Pick Up At</span>
+        ${state.deliveryMethod === 'PICKUP' ? `
+  <div class="honda-line">
+    <span>Pick Up At</span>
+    <strong>${state.selectedPickupLocation === 'DAN'
+      ? 'Danbury, CT'
+      : 'New Milford, CT'}</strong>
+  </div>
+` : ''}
         <strong>${state.selectedPickupLocation === 'DAN' ? 'Danbury, CT' : 'New Milford, CT'}</strong>
       </div>
 
@@ -302,7 +322,7 @@ Pickup Location: ${
     : 'New Milford, CT'
 }\nHonda Model: ${prod?clean(prod.Model):'Not selected'}\nSKU/Code: ${prod?skuOf(prod):'Not selected'}\nDelivery: ${del.label}${del.town?' - '+del.town:''}\nPayment Option: ${pay?clean(pay.Label)||optionId(pay):'Not selected'}\n\nEquipment Price: ${fmtMoney(equipmentPrice())}\nAssembly / Setup: ${assemblyFee()>0?fmtMoney(assemblyFee()):'Included'}\nDelivery Charge: ${state.deliveryMethod === 'DELIVERY' && del.fee > 0 ? fmtMoney(del.fee) : 'Not selected'}\nEstimated CT Sales Tax: ${fmtMoney(orderTax())}\nEstimated Total: ${fmtMoney(orderTotal())}\n\nNotes: ${clean($('honda-notes').value)}\n\nPrices, availability, financing, rebates, freight, setup, delivery, and final order details subject to West End Power confirmation.`; }
   function copyQuote(){ navigator.clipboard.writeText(quoteText()).then(()=>alert('Honda quote copied.')); }
-  function printQuote(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(), quoteNumber='WEP-HONDA-'+Date.now().toString().slice(-6); $('honda-print-output').innerHTML=`<div class="honda-print-sheet"><div class="honda-print-head"><div><h1 style="margin:0;">West End Power Equipment</h1><div style="font-size:18px;font-weight:700;">Honda Power Equipment Quote</div></div><div style="font-size:12px;text-align:right;">Quote #: ${quoteNumber}<br>Date: ${new Date().toLocaleDateString()}<br>New Milford: (860) 355-8722</div></div><h2>${prod?escapeHtml(nameOf(prod)):'Honda Product Quote'}</h2>${prod&&imageOf(prod)?`<img src="${escapeHtml(imageOf(prod))}" style="max-width:220px;height:auto;object-fit:contain;">`:''}<table class="honda-print-table"><tr><th>Customer</th><td>${escapeHtml(clean($('honda-customer-name').value)||'Not entered')}</td></tr><tr><th>Phone</th><td>${escapeHtml(clean($('honda-customer-phone').value)||'Not entered')}</td></tr><tr><th>Email</th><td>${escapeHtml(clean($('honda-customer-email').value)||'Not entered')}</td></tr>
+  function printQuote(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(), quoteNumber='WEP-HONDA-'+Date.now().toString().slice(-6); $('honda-print-output').innerHTML=`<div class="honda-print-sheet"><div class="honda-print-head"><div><h1 style="margin:0;">West End Power Equipment</h1><div style="font-size:18px;font-weight:700;">Honda Power Equipment Quote</div></div><div style="font-size:12px;text-align:right;">Quote #: ${quoteNumber}<br>Date: ${new Date().toLocaleDateString()}<br>New Milford: (860) 355-8722</div></div><h2>${prod?escapeHtml(clean(prod.Model)):'Honda Product Quote'}</h2>${prod&&imageOf(prod)?`<img src="${escapeHtml(imageOf(prod))}" style="max-width:220px;height:auto;object-fit:contain;">`:''}<table class="honda-print-table"><tr><th>Customer</th><td>${escapeHtml(clean($('honda-customer-name').value)||'Not entered')}</td></tr><tr><th>Phone</th><td>${escapeHtml(clean($('honda-customer-phone').value)||'Not entered')}</td></tr><tr><th>Email</th><td>${escapeHtml(clean($('honda-customer-email').value)||'Not entered')}</td></tr>
 
 <tr>
   <th>Address</th>
