@@ -172,6 +172,16 @@
 
   const row = deliveryRow();
 
+  if(!row){
+    return {
+      label:'',
+      fee:0,
+      town:'',
+      found:false,
+      showFee:false
+    };
+  }
+
   const col = deliveryClassColumn(state.selectedProduct);
   const fee = money(row[col]);
 
@@ -204,22 +214,18 @@
  function renderDeliveryDetails(){
   const info = deliveryInfo();
 
-if(!info.town){
-  $('honda-delivery-details').innerHTML = '';
-  return;
-}
+  if(!info.town){
+    $('honda-delivery-details').innerHTML = '';
+    return;
+  }
+
+  $('honda-delivery-details').innerHTML = `
+    <div class="honda-payment-result">
+      <h3>
+        ${info.fee > 0
+          ? `Delivery to ${escapeHtml(info.town)} — ${fmtMoney(info.fee)}`
+          : `Delivery to ${escapeHtml(info.town)} Included`}
       </h3>
-
-      ${info.showFee ? `
-        <div class="honda-line">
-          <span>Delivery Charge</span>
-          <strong>${fmtMoney(info.fee)}</strong>
-        </div>
-      ` : ''}
-
-      <p class="honda-small">
-        You may choose delivery if available, or pick up at West End Power.
-      </p>
     </div>
   `;
 }
