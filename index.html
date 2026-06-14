@@ -78,7 +78,7 @@
     <div id="honda-load-status" class="honda-note">Loading Honda configurator data...</div>
     <div class="honda-grid">
       <div>
-        <section class="honda-panel"><h2>1. Select Use & Honda Product</h2><label>Use Type</label><div class="honda-use-buttons" id="honda-use-buttons"><button class="honda-pill active" type="button" data-use="PERSONAL">Personal Use</button><button class="honda-pill" type="button" data-use="COMMERCIAL">Commercial Use</button></div><div class="honda-controls"><div><label for="honda-search">Search Honda Products</label><input id="honda-search" type="search" placeholder="Search model, SKU, category, specs, or keyword..." /></div><div><label for="honda-product-select">Honda Product</label><select id="honda-product-select"><option value="">Choose Honda product</option></select></div></div><div class="honda-category-buttons" id="honda-category-buttons"></div><div id="honda-product-details"></div></section>
+        <section class="honda-panel"><h2>1. Select Use & Honda Product</h2><label>Use Type</label><div class="honda-use-buttons" id="honda-use-buttons"><button class="honda-pill active" type="button" data-use="Personal">Personal Use</button><button class="honda-pill" type="button" data-use="Commercial">Commercial Use</button></div><div class="honda-controls"><div><label for="honda-search">Search Honda Products</label><input id="honda-search" type="search" placeholder="Search model, SKU, category, specs, or keyword..." /></div><div><label for="honda-product-select">Honda Product</label><select id="honda-product-select"><option value="">Choose Honda product</option></select></div></div><div class="honda-category-buttons" id="honda-category-buttons"></div><div id="honda-product-details"></div></section>
 
         <section class="honda-panel">
   <h2>2. Delivery / Pickup</h2>
@@ -557,17 +557,30 @@ Prices, availability, financing, rebates, freight, setup, delivery, and final or
   <div class="honda-print-grid">
 
     <div class="honda-print-box">
-      <h3>Selected Fulfillment</h3>
-      ${
-        state.deliveryMethod === 'DELIVERY'
-          ? `Delivery: ${escapeHtml(del.label)}${del.town ? ' - ' + escapeHtml(del.town) : ''}`
-          : state.deliveryMethod === 'PICKUP_NM'
-            ? 'Pickup Location: New Milford, CT'
-            : 'Pickup Location: Danbury, CT'
-      }
-      <br>
-      Payment Option: ${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}
-    </div>
+  <h3>Selected Fulfillment</h3>
+
+  ${
+    state.deliveryMethod === 'DELIVERY'
+      ? `
+        Delivery To: ${escapeHtml(del.town || 'Selected ZIP')}<br>
+        Delivery Charge: ${del.fee > 0 ? fmtMoney(del.fee) : 'Included'}
+      `
+      : state.deliveryMethod === 'PICKUP_NM'
+        ? `
+          Pickup Location: New Milford, CT<br>
+          Delivery Charge: Not Applicable
+        `
+        : `
+          Pickup Location: Danbury, CT<br>
+          Delivery Charge: Not Applicable
+        `
+  }
+
+  <br><br>
+
+  Payment Option:
+  ${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}
+</div>
 
     <div class="honda-print-box">
       <h3>Pricing Summary</h3>
