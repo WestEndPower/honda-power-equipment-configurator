@@ -546,7 +546,7 @@ Prices, availability, financing, rebates, freight, setup, delivery, and final or
       <h3>Equipment</h3>
       <strong>${prod ? escapeHtml(clean(prod.Model)) : 'Honda Product Quote'}</strong><br>
       SKU / Honda Code: ${prod ? escapeHtml(skuOf(prod)) : 'Not selected'}<br>
-      Use Type: ${state.selectedUse}<br>
+      Use Type: ${state.selectedUse === 'COMMERCIAL' ? 'Commercial' : 'Personal'}<br>
       ${prod && clean(prod.Category) ? 'Category: ' + escapeHtml(clean(prod.Category)) + '<br>' : ''}
       ${prod && clean(prod.WarrantyConsumer) ? 'Consumer Warranty: ' + escapeHtml(clean(prod.WarrantyConsumer)) + '<br>' : ''}
       ${prod && clean(prod.WarrantyProfessional) ? 'Commercial Warranty: ' + escapeHtml(clean(prod.WarrantyProfessional)) + '<br>' : ''}
