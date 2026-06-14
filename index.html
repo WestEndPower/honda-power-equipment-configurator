@@ -278,7 +278,8 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
   const del = deliveryInfo();
 
   const equip = equipmentPrice();
-  const rebate = money(prod?.FactoryRebate);  
+  const rebate = money(prod?.FactoryRebate);
+  const adjustedPrice = equip - rebate;  
   const assembly = assemblyFee();
   const delivery = state.deliveryMethod === 'DELIVERY' ? del.fee : 0;
   const tax = orderTax();
@@ -311,6 +312,12 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
   <div class="honda-line">
     <span>Factory Rebate</span>
     <strong>-${fmtMoney(rebate)}</strong>
+  </div>
+` : ''}
+${rebate > 0 ? `
+  <div class="honda-line">
+    <span>Price After Rebate</span>
+    <strong>${fmtMoney(adjustedPrice)}</strong>
   </div>
 ` : ''}
 
