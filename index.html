@@ -68,7 +68,7 @@
     border-top:3px solid #111
   }
 
-} }
+}
   </style>
 </head>
 <body>
@@ -404,7 +404,7 @@ $('honda-after-rebate-line').classList.toggle('honda-hide', rebate <= 0);
   pay ? (clean(pay.Label) || optionId(pay)) : 'Not Selected';
 
   $('honda-assembly-line').classList.toggle('honda-hide', assembly <= 0);
-  $('honda-delivery-line').classList.toggle('honda-hide', delivery <= 0);
+ $('honda-delivery-line').classList.remove('honda-hide');
 
   $('honda-summary-lines').innerHTML = `
     <div class="honda-card">
