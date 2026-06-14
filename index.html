@@ -82,6 +82,8 @@
   <input id="honda-business-name" placeholder="Business name (optional)" />
 </div>
 
+<div class="honda-controls">
+
   <div>
     <label for="honda-customer-phone">Phone</label>
     <input id="honda-customer-phone"
@@ -98,17 +100,28 @@
            placeholder="Alternate Phone" />
   </div>
 
-</div><label for="honda-customer-street" style="margin-top:10px;">Street Address</label>
+</div>
+    <label for="honda-customer-street" style="margin-top:10px;">Street Address</label>
 <input id="honda-customer-street" placeholder="Street address" />
 
-<label for="honda-customer-city" style="margin-top:10px;">City</label>
-<input id="honda-customer-city" placeholder="City" />
+<div class="honda-controls">
 
-<label for="honda-customer-state" style="margin-top:10px;">State</label>
-<input id="honda-customer-state" placeholder="State" value="CT" />
+  <div>
+    <label for="honda-customer-city">City</label>
+    <input id="honda-customer-city" placeholder="City" />
+  </div>
 
-<label for="honda-customer-zip" style="margin-top:10px;">ZIP Code</label>
-<input id="honda-customer-zip" maxlength="5" placeholder="ZIP Code" /></div><div style="margin-top:10px"><label for="honda-customer-email">Email</label><input id="honda-customer-email" type="email" placeholder="Email address" /></div><div style="margin-top:10px"><label for="honda-notes">Notes</label><textarea id="honda-notes" placeholder="Optional quote/order notes"></textarea></div><div id="honda-summary-lines" style="margin-top:12px"></div><div class="honda-line"><span>Price Before Discount</span><strong id="honda-equipment-price">$0.00</strong></div><div class="honda-line" id="honda-rebate-line">
+  <div>
+    <label for="honda-customer-state">State</label>
+    <input id="honda-customer-state" placeholder="State" value="CT" />
+  </div>
+
+  <div>
+    <label for="honda-customer-zip">ZIP Code</label>
+    <input id="honda-customer-zip" maxlength="5" placeholder="ZIP Code" />
+  </div>
+
+</div><div style="margin-top:10px"><label for="honda-customer-email">Email</label><input id="honda-customer-email" type="email" placeholder="Email address" /></div><div style="margin-top:10px"><label for="honda-notes">Notes</label><textarea id="honda-notes" placeholder="Optional quote/order notes"></textarea></div><div id="honda-summary-lines" style="margin-top:12px"></div><div class="honda-line"><span>Price Before Discount</span><strong id="honda-equipment-price">$0.00</strong></div><div class="honda-line" id="honda-rebate-line">
   <span>Rebate / Discount</span>
   <strong id="honda-rebate-amount">-$0.00</strong>
 </div>
