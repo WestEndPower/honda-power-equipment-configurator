@@ -579,7 +579,31 @@ Prices, availability, financing, rebates, freight, setup, delivery, and final or
   <br><br>
 
   Payment Option:
-  ${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}
+${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}
+
+${pay && num(pay.TermMonths) > 0 ? `
+<br>
+Estimated Monthly Payment:
+<strong>${fmtMoney(
+  monthlyPayment(
+    financePrincipal(),
+    num(pay.APR),
+    num(pay.TermMonths)
+  )
+)} / month</strong>
+` : ''}
+${pay && num(pay.TermMonths) > 0 ? `
+<tr>
+  <td>Estimated Monthly Payment</td>
+  <td>${fmtMoney(
+    monthlyPayment(
+      financePrincipal(),
+      num(pay.APR),
+      num(pay.TermMonths)
+    )
+  )}/mo</td>
+</tr>
+` : ''}
 </div>
 
     <div class="honda-print-box">
