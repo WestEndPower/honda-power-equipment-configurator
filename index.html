@@ -82,7 +82,10 @@
 <input id="honda-customer-zip" maxlength="5" placeholder="ZIP Code" /></div><div style="margin-top:10px"><label for="honda-customer-phone">Phone</label><input id="honda-customer-phone"
        type="tel"
        maxlength="14"
-       placeholder="Phone Number" /></div><div style="margin-top:10px"><label for="honda-customer-email">Email</label><input id="honda-customer-email" type="email" placeholder="Email address" /></div><div style="margin-top:10px"><label for="honda-notes">Notes</label><textarea id="honda-notes" placeholder="Optional quote/order notes"></textarea></div><div id="honda-summary-lines" style="margin-top:12px"></div><div class="honda-line"><span>Equipment Price</span><strong id="honda-equipment-price">$0.00</strong></div><div class="honda-line" id="honda-assembly-line"><span>Assembly / Setup</span><strong id="honda-assembly-fee">$0.00</strong></div><div class="honda-line" id="honda-delivery-line"><span>Delivery</span><strong id="honda-delivery-fee">$0.00</strong></div><div class="honda-line"><span>Estimated CT Sales Tax</span><strong id="honda-tax">$0.00</strong></div><div class="honda-line"><span>Estimated Total</span><strong class="honda-total" id="honda-total">$0.00</strong></div><div class="honda-btn-row"><button class="honda-btn dark" id="honda-print" type="button">Print / Save PDF</button><button class="honda-btn light" id="honda-copy" type="button">Copy Quote</button><button class="honda-btn green" id="honda-stripe-deposit" type="button">Stripe Deposit</button><button class="honda-btn" id="honda-stripe-full" type="button">Pay in Full</button></div><p class="honda-small">Stripe buttons are placeholders until a secure checkout endpoint is connected. Final orders require West End Power confirmation.</p></section></aside>
+       placeholder="Phone Number" /></div><div style="margin-top:10px"><label for="honda-customer-email">Email</label><input id="honda-customer-email" type="email" placeholder="Email address" /></div><div style="margin-top:10px"><label for="honda-notes">Notes</label><textarea id="honda-notes" placeholder="Optional quote/order notes"></textarea></div><div id="honda-summary-lines" style="margin-top:12px"></div><div class="honda-line"><span>Price Before Rebate</span><strong id="honda-equipment-price">$0.00</strong></div><div class="honda-line" id="honda-assembly-line"><span>Assembly / Setup</span><strong id="honda-assembly-fee">$0.00</strong></div><div class="honda-line" id="honda-delivery-line"><span>Delivery</span><strong id="honda-delivery-fee">$0.00</strong></div><div class="honda-line"><span>Estimated CT Sales Tax</span><strong id="honda-tax">$0.00</strong></div><div class="honda-line"><span>Estimated Total</span><strong class="honda-total" id="honda-total">$0.00</strong></div><span>Payment</span>
+        <strong>${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}</strong>
+      </div>
+    </div><div class="honda-btn-row"><button class="honda-btn dark" id="honda-print" type="button">Print / Save PDF</button><button class="honda-btn light" id="honda-copy" type="button">Copy Quote</button><button class="honda-btn green" id="honda-stripe-deposit" type="button">Stripe Deposit</button><button class="honda-btn" id="honda-stripe-full" type="button">Pay in Full</button></div><p class="honda-small">Stripe buttons are placeholders until a secure checkout endpoint is connected. Final orders require West End Power confirmation.</p></section></aside>
     </div><div id="honda-print-output"></div>
   </main>
 
@@ -349,10 +352,7 @@ ${state.deliveryMethod === 'PICKUP_DAN' ? `
 ` : ''}
 
       <div class="honda-line">
-        <span>Payment</span>
-        <strong>${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}</strong>
-      </div>
-    </div>
+        
   `;
 }
   function quoteText(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(); return `Honda Power Equipment Quote\nWest End Power Equipment\n\nCustomer: ${clean($('honda-customer-name').value)||'Not entered'}\nPhone: ${clean($('honda-customer-phone').value)||'Not entered'}\nEmail: ${clean($('honda-customer-email').value)||'Not entered'}
