@@ -185,23 +185,6 @@
   const info = deliveryInfo();
 
   $('honda-delivery-details').innerHTML = `
-    <div class="honda-payment-result">
-      <h3>
-        ${!info.town
-          ? escapeHtml(info.label)
-          : (info.fee > 0
-              ? `Delivery to ${escapeHtml(info.town)} — ${fmtMoney(info.fee)}`
-              : `Delivery to ${escapeHtml(info.town)} Included`)
-        }
-      </h3>
-
-      ${state.deliveryMethod === 'DELIVERY' && info.showFee ? `
-        <div class="honda-line">
-          <span>Delivery Charge</span>
-          <strong>${fmtMoney(info.fee)}</strong>
-        </div>
-      ` : ''}
-
       ${state.deliveryMethod === 'PICKUP' ? `
         <div class="honda-line">
           <span>Pickup Location</span>
@@ -300,7 +283,7 @@ const total = orderTotal(); $('honda-equipment-price').textContent=fmtMoney(equi
       <strong>${pay?escapeHtml(clean(pay.Label)||optionId(pay)):'Not selected'}</strong>
     </div>
   </div>
-`;
+`;}
   function quoteText(){ const prod=state.selectedProduct, pay=state.selectedPayment, del=deliveryInfo(); return `Honda Power Equipment Quote\nWest End Power Equipment\n\nCustomer: ${clean($('honda-customer-name').value)||'Not entered'}\nPhone: ${clean($('honda-customer-phone').value)||'Not entered'}\nEmail: ${clean($('honda-customer-email').value)||'Not entered'}
 
 Address: ${clean($('honda-customer-street').value)||'Not entered'}
