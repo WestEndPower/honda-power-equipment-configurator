@@ -34,15 +34,9 @@
         <section class="honda-panel"><h2>1. Select Use & Honda Product</h2><label>Use Type</label><div class="honda-use-buttons" id="honda-use-buttons"><button class="honda-pill active" type="button" data-use="PERSONAL">Personal Use</button><button class="honda-pill" type="button" data-use="COMMERCIAL">Commercial Use</button></div><div class="honda-controls"><div><label for="honda-search">Search Honda Products</label><input id="honda-search" type="search" placeholder="Search model, SKU, category, specs, or keyword..." /></div><div><label for="honda-product-select">Honda Product</label><select id="honda-product-select"><option value="">Choose Honda product</option></select></div></div><div class="honda-category-buttons" id="honda-category-buttons"></div><div id="honda-product-details"></div></section>
 
         <section class="honda-panel">
-  <h2>2. Pickup / Delivery</h2>
+  <h2>2. Delivery / Pickup</h2>
 
-  <label for="honda-pickup-location">Select Pickup Location</label>
-  <select id="honda-pickup-location">
-    <option value="NM">New Milford, CT</option>
-    <option value="DAN">Danbury, CT</option>
-  </select>
-
-  <label for="honda-delivery-zip" style="margin-top:10px;">Enter ZIP Code for Delivery Quote</label>
+  <label for="honda-delivery-zip">Deliver To (ZIP Code)</label>
   <input id="honda-delivery-zip"
          inputmode="numeric"
          maxlength="5"
@@ -50,13 +44,19 @@
 
   <div id="honda-delivery-details"></div>
 
-  <label for="honda-delivery-method" style="margin-top:10px;">
-    Fulfillment Option
-  </label>
-  <select id="honda-delivery-method">
-    <option value="PICKUP">Customer Pickup</option>
-    <option value="DELIVERY">Local Delivery</option>
+  <label for="honda-pickup-location" style="margin-top:10px;">Or Pick Up At</label>
+  <select id="honda-pickup-location">
+    <option value="NM">New Milford, CT</option>
+    <option value="DAN">Danbury, CT</option>
   </select>
+</section>
+  <label for="honda-delivery-zip" style="margin-top:10px;">Enter ZIP Code for Delivery Quote</label>
+  <input id="honda-delivery-zip"
+         inputmode="numeric"
+         maxlength="5"
+         placeholder="Enter ZIP code to check delivery" />
+
+  <div id="honda-delivery-details"></div>
 </section>
 
         <section class="honda-panel"><h2>3. Select Payment Option</h2><label for="honda-payment-select">Payment Method</label><select id="honda-payment-select"><option value="">Choose payment option</option></select><div id="honda-payment-details"></div></section>
@@ -86,7 +86,7 @@
   payments:[],
   delivery:[],
   selectedUse:'PERSONAL',
-  selectedPickupLocation:'NM', selectedCategory:'', selectedProduct:null, selectedPayment:null, deliveryMethod:'PICKUP', deliveryZip:''};
+  selectedPickupLocation:'NM', selectedCategory:'', selectedProduct:null, selectedPayment:null, deliveryZip:''};
   const $ = id => document.getElementById(id);
   function clean(v){ return (v === null || v === undefined || String(v).toLowerCase() === 'nan') ? '' : String(v).trim(); }
   function money(v){ const n = Number(clean(v).replace(/[$,%]/g,'')); return isFinite(n) ? n : 0; }
@@ -107,7 +107,7 @@
   function bindEvents(){ $('honda-search').addEventListener('input', renderProducts); $('honda-product-select').addEventListener('change', () => { const sku=clean($('honda-product-select').value); state.selectedProduct=state.products.find(p=>skuOf(p)===sku)||null; state.selectedPayment=null; renderPayments(); renderAll(); }); $('honda-payment-select').addEventListener('change',()=>{ const id=clean($('honda-payment-select').value); state.selectedPayment=state.payments.find(p=>optionId(p)===id)||null; renderAll(); }); $('honda-pickup-location').addEventListener('change',()=>{
   state.selectedPickupLocation = $('honda-pickup-location').value;
   renderSummary();
-});$('honda-delivery-method').addEventListener('change',()=>{ state.deliveryMethod=clean($('honda-delivery-method').value); renderAll(); }); $('honda-delivery-zip').addEventListener('input',()=>{ state.deliveryZip=padZip($('honda-delivery-zip').value); renderAll(); }); document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); state.selectedUse=btn.dataset.use; state.selectedPayment=null; renderPayments(); renderAll(); })); $('honda-print').addEventListener('click',printQuote); $('honda-copy').addEventListener('click',copyQuote); $('honda-stripe-deposit').addEventListener('click',()=>stripePlaceholder('deposit')); $('honda-stripe-full').addEventListener('click',()=>stripePlaceholder('full')); [
+}); $('honda-delivery-zip').addEventListener('input',()=>{ state.deliveryZip=padZip($('honda-delivery-zip').value); renderAll(); }); document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); state.selectedUse=btn.dataset.use; state.selectedPayment=null; renderPayments(); renderAll(); })); $('honda-print').addEventListener('click',printQuote); $('honda-copy').addEventListener('click',copyQuote); $('honda-stripe-deposit').addEventListener('click',()=>stripePlaceholder('deposit')); $('honda-stripe-full').addEventListener('click',()=>stripePlaceholder('full')); [
  'honda-customer-name',
  'honda-customer-phone',
  'honda-customer-email',
@@ -165,11 +165,7 @@
   };
 }
   function orderSubtotal(){
-  const delivery = state.deliveryMethod === 'DELIVERY'
-    ? deliveryInfo().fee
-    : 0;
-
-  return equipmentPrice() + assemblyFee() + delivery;
+  return equipmentPrice() + assemblyFee() + deliveryInfo().fee;
 }
   function orderTax(){ return orderSubtotal()*TAX_RATE; }
   function orderTotal(){ return orderSubtotal()+orderTax(); }
@@ -193,6 +189,21 @@
               ? `Delivery to ${escapeHtml(info.town)} — ${fmtMoney(info.fee)}`
               : `Delivery to ${escapeHtml(info.town)} Included`)
         }
+      </h3>
+
+      ${info.showFee ? `
+        <div class="honda-line">
+          <span>Delivery Charge</span>
+          <strong>${fmtMoney(info.fee)}</strong>
+        </div>
+      ` : ''}
+
+      <p class="honda-small">
+        You may choose delivery if available, or pick up at West End Power.
+      </p>
+    </div>
+  `;
+}
       </h3>
 
       ${state.deliveryMethod === 'DELIVERY' && info.showFee ? `
@@ -239,11 +250,7 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
 const assembly = assemblyFee();
 const delivery = state.deliveryMethod === 'DELIVERY' ? del.fee : 0;
 const tax = orderTax();
-const total = orderTotal(); $('honda-equipment-price').textContent=fmtMoney(equip); $('honda-assembly-fee').textContent=fmtMoney(assembly); $('honda-delivery-fee').textContent=delivery>0?fmtMoney(delivery):del.label; $('honda-tax').textContent=fmtMoney(tax); $('honda-total').textContent=fmtMoney(total); $('honda-assembly-line').classList.toggle('honda-hide', assembly<=0); $('honda-delivery-line').classList.toggle('honda-hide', state.deliveryMethod==='PICKUP'||delivery<=0); $('honda-summary-lines').innerHTML=`
-  <div class="honda-card">
-    <div class="honda-line">
-      <span>Use Type</span>
-      <strong>${state.selectedUse==='COMMERCIAL'?'Commercial Use':'Personal Use'}</strong>
+const total = orderTotal(); $('honda-equipment-price').textContent=fmtMoney(equip); $('honda-assembly-fee').textContent=fmtMoney(assembly); $('honda-delivery-fee').textContent=delivery>0?fmtMoney(delivery):del.label; $('honda-tax').textContent=fmtMoney(tax); $('honda-total').textContent=fmtMoney(total); $('honda-assembly-line').classList.toggle('honda-hide', assembly<=0); $('honda-delivery-line').classList.toggle('honda-hide', state.deliveryMethod==='PICKUP'||delivery<=0); 
     </div>
 
     <div class="honda-line">
