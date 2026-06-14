@@ -105,8 +105,8 @@
   function bindEvents(){ $('honda-search').addEventListener('input', renderProducts); $('honda-product-select').addEventListener('change', () => { const sku=clean($('honda-product-select').value); state.selectedProduct=state.products.find(p=>skuOf(p)===sku)||null; state.selectedPayment=null; renderPayments(); renderAll(); }); $('honda-payment-select').addEventListener('change',()=>{ const id=clean($('honda-payment-select').value); state.selectedPayment=state.payments.find(p=>optionId(p)===id)||null; renderAll(); }); $('honda-pickup-location').addEventListener('change',()=>{
   state.selectedPickupLocation = $('honda-pickup-location').value;
   renderSummary();
-}); $('honda-delivery-zip').addEventListener('input',()=>{ state.deliveryZip=padZip($('honda-delivery-zip').value); renderAll(); });$('honda-delivery-zip').addEventListener('input',()=>{
-  state.deliveryZip = padZip($('honda-delivery-zip').value);
+}); $('honda-delivery-zip').addEventListener('input',()=>{ state.deliveryZip=padZip($('honda-delivery-zip').value); renderAll(); });$('honda-delivery-method').addEventListener('change',()=>{
+  state.deliveryMethod = $('honda-delivery-method').value;
   renderAll();
 }); document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(btn=>btn.addEventListener('click',()=>{ document.querySelectorAll('#honda-use-buttons .honda-pill').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); state.selectedUse=btn.dataset.use; state.selectedPayment=null; renderPayments(); renderAll(); })); $('honda-print').addEventListener('click',printQuote); $('honda-copy').addEventListener('click',copyQuote); $('honda-stripe-deposit').addEventListener('click',()=>stripePlaceholder('deposit')); $('honda-stripe-full').addEventListener('click',()=>stripePlaceholder('full')); [
  'honda-customer-name',
@@ -232,7 +232,7 @@ ${apr||months?`<div class="honda-line"><span>APR / Term</span><strong>${apr}% / 
 
   const equip = equipmentPrice();
   const assembly = assemblyFee();
-  const delivery = del.fee;
+ const delivery = state.deliveryMethod === 'DELIVERY' ? del.fee : 0;
   const tax = orderTax();
   const total = orderTotal();
 
