@@ -809,7 +809,32 @@ ${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}
     depositAmount:
       500
   };
+}catch(err){
 
+    console.error(err);
+
+    alert(
+      'Unable to connect to Stripe checkout.'
+    );
+
+  }
+}
+
+function escapeHtml(str){
+  return clean(str).replace(/[&<>"']/g, m=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#039;'
+  }[m]));
+}
+
+window.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
   try{
 
     const response = await fetch(
