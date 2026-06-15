@@ -778,10 +778,69 @@ ${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}
 </div>`;
 
   window.print();
-}  function stripePlaceholder(kind){ if(!state.selectedProduct){alert('Choose a Honda product first.');return;} alert((kind==='deposit'?'Stripe deposit':'Stripe pay-in-full')+' will be connected after we add a secure checkout backend.'); }
-  function escapeHtml(str){ return clean(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
-  window.addEventListener('DOMContentLoaded', init);
-})();
+}  async function stripePlaceholder(kind){
+
+  if(!state.selectedProduct){
+    alert('Choose a Honda product first.');
+    return;
+  }
+
+  const payload = {
+    type: kind,
+
+    customerName:
+      clean($('honda-customer-name').value),
+
+    customerEmail:
+      clean($('honda-customer-email').value),
+
+    customerPhone:
+      clean($('honda-customer-phone').value),
+
+    product:
+      clean(state.selectedProduct.Model),
+
+    sku:
+      skuOf(state.selectedProduct),
+
+    total:
+      orderTotal(),
+
+    depositAmount:
+      500
+  };
+
+  try{
+
+    const response = await fetch(
+      'https://westendpower-stripe-checkout.westendpower-nm.workers.dev',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(payload)
+      }
+    );
+
+    const data = await response.json();
+
+    if(data.url){
+      window.location.href = data.url;
+    }else{
+      alert(data.error || 'Unable to start Stripe checkout.');
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+    alert(
+      'Unable to connect to Stripe checkout.'
+    );
+
+  }
+}
 </script>
 </body>
 </html>
