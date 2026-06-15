@@ -813,7 +813,7 @@ ${pay ? escapeHtml(clean(pay.Label)||optionId(pay)) : 'Not selected'}
     const data = await response.json();
 
     if(data.url){
-      window.location.href = data.url;
+      window.top.location.href = data.url;
     }else{
       alert(data.error || 'Unable to start Stripe checkout.');
     }
