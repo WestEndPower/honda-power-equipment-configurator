@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  
 <head>
   <!-- =========================================================
        SECTION START: HONDA POWER EQUIPMENT CONFIGURATOR HEAD
@@ -576,19 +577,141 @@ Prices, availability, financing, rebates, freight, setup, delivery, and final or
     .then(()=>alert('Honda quote copied.'));
 }
 
-function emailQuote(){
+async function emailQuote(){
 
-  const subject = encodeURIComponent(
-    'Honda Quote - ' +
-    (state.selectedProduct
-      ? clean(state.selectedProduct.Model)
-      : 'No Product Selected')
-  );
+  if(!state.selectedProduct){
+    alert('Choose a Honda product first.');
+    return;
+  }
 
-  const body = encodeURIComponent(quoteText());
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-  window.location.href =
-    `mailto:sales@westendpower.com?subject=${subject}&body=${body}`;
+  const quoteId = 'WEP-HONDA-' + Date.now().toString().slice(-6);
+  const prod = state.selectedProduct;
+  const pay = state.selectedPayment;
+  const del = deliveryInfo();
+
+  let y = 15;
+
+  doc.setFontSize(18);
+  doc.text('West End Power Equipment', 15, y);
+  y += 8;
+
+  doc.setFontSize(14);
+  doc.text('Honda Power Equipment Quote', 15, y);
+  y += 10;
+
+  doc.setFontSize(10);
+  doc.text(`Quote #: ${quoteId}`, 15, y); y += 6;
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 15, y); y += 6;
+  doc.text(`Valid Through: ${new Date(Date.now()+14*24*60*60*1000).toLocaleDateString()}`, 15, y); y += 10;
+
+  doc.setFontSize(12);
+  doc.text('Customer Information', 15, y); y += 7;
+
+  doc.setFontSize(10);
+  doc.text(`Customer: ${clean($('honda-customer-name').value) || 'Not entered'}`, 15, y); y += 6;
+  doc.text(`Business: ${clean($('honda-business-name').value) || 'Not entered'}`, 15, y); y += 6;
+  doc.text(`Phone: ${clean($('honda-customer-phone').value) || 'Not entered'}`, 15, y); y += 6;
+  doc.text(`Additional Phone: ${clean($('honda-customer-phone2').value) || 'Not entered'}`, 15, y); y += 6;
+  doc.text(`Email: ${clean($('honda-customer-email').value) || 'Not entered'}`, 15, y); y += 6;
+  doc.text(`Address: ${clean($('honda-customer-street').value) || 'Not entered'}`, 15, y); y += 6;
+  doc.text(`${clean($('honda-customer-city').value)} ${clean($('honda-customer-state').value)} ${clean($('honda-customer-zip').value)}`, 15, y); y += 10;
+
+  doc.setFontSize(12);
+  doc.text('Equipment', 15, y); y += 7;
+
+  doc.setFontSize(10);
+  doc.text(`Model: ${clean(prod.Model)}`, 15, y); y += 6;
+  doc.text(`SKU / Honda Code: ${skuOf(prod)}`, 15, y); y += 6;
+  doc.text(`Category: ${clean(prod.Category) || 'Not entered'}`, 15, y); y += 6;
+  doc.text(`Use Type: ${state.selectedUse === 'COMMERCIAL' ? 'Commercial' : 'Personal'}`, 15, y); y += 10;
+
+  doc.setFontSize(12);
+  doc.text('Fulfillment / Payment', 15, y); y += 7;
+
+  doc.setFontSize(10);
+
+  if(state.deliveryMethod === 'DELIVERY'){
+    doc.text(`Delivery To: ${del.town || 'Selected ZIP'}`, 15, y); y += 6;
+    doc.text(`Delivery Charge: ${del.fee > 0 ? fmtMoney(del.fee) : 'Included'}`, 15, y); y += 6;
+  }else if(state.deliveryMethod === 'PICKUP_NM'){
+    doc.text('Pickup Location: New Milford, CT', 15, y); y += 6;
+  }else{
+    doc.text('Pickup Location: Danbury, CT', 15, y); y += 6;
+  }
+
+  doc.text(`Payment Option: ${pay ? clean(pay.Label) || optionId(pay) : 'Not selected'}`, 15, y); y += 10;
+
+  doc.setFontSize(12);
+  doc.text('Pricing Summary', 15, y); y += 7;
+
+  doc.setFontSize(10);
+  doc.text(`Price Before Discount: ${fmtMoney(equipmentPrice())}`, 15, y); y += 6;
+
+  if(money(prod.FactoryRebate) > 0){
+    doc.text(`Rebate / Discount: -${fmtMoney(money(prod.FactoryRebate))}`, 15, y); y += 6;
+    doc.text(`Price After Discount: ${fmtMoney(equipmentPrice() - money(prod.FactoryRebate))}`, 15, y); y += 6;
+  }
+
+  doc.text(`Assembly / Setup: ${assemblyFee() > 0 ? fmtMoney(assemblyFee()) : 'Included'}`, 15, y); y += 6;
+  doc.text(`Delivery: ${
+    state.deliveryMethod === 'DELIVERY'
+      ? (del.fee > 0 ? fmtMoney(del.fee) : 'Included')
+      : 'Not Applicable'
+  }`, 15, y); y += 6;
+  doc.text(`Estimated CT Sales Tax: ${fmtMoney(orderTax())}`, 15, y); y += 6;
+
+  doc.setFontSize(13);
+  doc.text(`Estimated Total: ${fmtMoney(orderTotal())}`, 15, y); y += 10;
+
+  const notes = clean($('honda-notes').value);
+  if(notes){
+    doc.setFontSize(10);
+    doc.text('Notes:', 15, y); y += 6;
+    doc.text(doc.splitTextToSize(notes, 180), 15, y);
+  }
+
+  const pdfBase64 = doc.output('datauristring').split(',')[1];
+
+  const payload = {
+    quoteId,
+    customerName: clean($('honda-customer-name').value),
+    businessName: clean($('honda-business-name').value),
+    customerEmail: clean($('honda-customer-email').value),
+    customerPhone: clean($('honda-customer-phone').value),
+    model: clean(prod.Model),
+    sku: skuOf(prod),
+    total: fmtMoney(orderTotal()),
+    quoteText: quoteText(),
+    pdfBase64
+  };
+
+  try{
+    const response = await fetch(
+      'PASTE_YOUR_EMAIL_WORKER_URL_HERE',
+      {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body:JSON.stringify(payload)
+      }
+    );
+
+    const result = await response.json();
+
+    if(!response.ok || !result.success){
+      console.error(result);
+      alert('Quote email could not be sent.');
+      return;
+    }
+
+    alert('Quote emailed successfully. Quote #: ' + quoteId);
+
+  }catch(err){
+    console.error(err);
+    alert('Unable to send quote email.');
+  }
 }
   function printQuote(){
   const prod = state.selectedProduct;
